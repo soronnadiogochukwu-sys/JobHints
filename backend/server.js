@@ -14,28 +14,34 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+// Connect to MongoDB
 connectDB();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
+
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
 
+// Home route
 app.get("/", (req, res) => {
   res.json({
     message: "JobHints API is running successfully",
   });
-  app.get("/api/test", (req, res) => {
+});
+
+// Test route
+app.get("/api/test", (req, res) => {
   res.json({
     message: "JobHints API is working",
   });
 });
-});
 
-app.listen(PORT, () => {
-  console.log(
-    `JobHints API running on http://localhost:${PORT}`
-  );
+// Start server
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`JobHints API running on port ${PORT}`);
 });
