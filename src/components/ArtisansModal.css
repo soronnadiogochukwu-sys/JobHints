@@ -1,0 +1,143 @@
+.modal-overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.65);
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+z-index:1000;
+}
+
+.artisan-modal{
+width:700px;
+max-width:100%;
+max-height:90vh;
+overflow-y:auto;
+background:#fff;
+border-radius:16px;
+padding:30px;
+position:relative;
+animation:popup .35s ease;
+}
+
+@keyframes popup{
+
+from{
+opacity:0;
+transform:scale(.9);
+}
+
+to{
+opacity:1;
+transform:scale(1);
+}
+
+}
+
+.close-btn{
+position:absolute;
+top:20px;
+right:20px;
+border:none;
+background:#f3f4f6;
+width:40px;
+height:40px;
+border-radius:50%;
+cursor:pointer;
+font-size:18px;
+}
+
+.modal-header{
+text-align:center;
+margin-bottom:30px;
+}
+
+.modal-header img{
+width:140px;
+height:140px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:15px;
+}
+
+.rating,
+.location{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:8px;
+margin-top:10px;
+}
+
+.star{
+color:#FFC107;
+}
+
+.section{
+margin:25px 0;
+}
+
+.section h3{
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:10px;
+}
+
+.section ul{
+padding-left:20px;
+}
+
+.section li{
+margin-bottom:8px;
+}
+
+.invite-btn,
+.send-btn{
+width:25%;
+padding:15px;
+background:#4F46E5;
+color:white;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+font-weight:600;
+}
+
+.invite-btn:hover,
+.send-btn:hover{
+background:#3730A3;
+}
+
+.interview-form{
+display:flex;
+flex-direction:column;
+gap:15px;
+margin-top:25px;
+}
+
+.interview-form input,
+.interview-form textarea{
+padding:14px;
+border:1px solid #ddd;
+border-radius:8px;
+font-size:15px;
+outline:none;
+}
+
+.interview-form input:focus,
+.interview-form textarea:focus{
+border-color:#4F46E5;
+}
+
+.success-box{
+margin-top:25px;
+padding:20px;
+background:#DCFCE7;
+border:1px solid #86EFAC;
+border-radius:10px;
+text-align:center;
+color:#166534;
+}

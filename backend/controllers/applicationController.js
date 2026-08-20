@@ -1,0 +1,189 @@
+const Application = require("../models/Application");
+const Job = require("../models/Job");
+
+// APPLY FOR A JOB
+const applyForJob = async (req, res) => {
+  try {
+    const { coverLetter, resumeUrl } = req.body;
+    const jobId = req.params.jobId;
+
+    // Check if the job exists
+    const job = await Job.findById(jobId);
+
+    if (!job) {
+      return res.status(404).json({
+        message: "Job not found"
+      });
+    }
+
+    // Make sure the job is still open
+    if (job.status !== "open") {
+      return res.status(400).json({
+        message: "This job is no longer accepting applications"
+      });
+    }
+
+    // Check if applicant has already applied
+    const existingApplication = await Application.findOne({
+      job: jobId,
+      applicant: req.user.id
+    });
+
+    if (existingApplication) {
+      return res.status(400).json({
+        message: "You have already applied for this job"
+      });
+    }
+
+    // Create application
+    const application = await Application.create({
+      job: jobId,
+      applicant: req.user.id,
+      coverLetter: coverLetter || "",
+      resumeUrl: resumeUrl || ""
+    });
+
+    res.status(201).json({
+      message: "Application submitted successfully",
+      application
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to submit application",
+      error: error.message
+    });
+  }
+};
+
+
+// GET MY APPLICATIONS
+const getMyApplications = async (req, res) => {
+  try {
+    const applications = await Application.find({
+      applicant: req.user.id
+    })
+      .populate(
+        "job",
+        "title company location category salary type status"
+      )
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      count: applications.length,
+      applications
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch applications",
+      error: error.message
+    });
+  }
+};
+// ==========================================
+// GET APPLICATIONS FOR EMPLOYER'S JOBS
+// ==========================================
+const getEmployerApplications = async (req, res) => {
+  try {
+    // Find all jobs created by this employer
+    const jobs = await Job.find({
+      employer: req.user.id
+    }).select("_id");
+
+    const jobIds = jobs.map((job) => job._id);
+
+    // Find applications submitted for those jobs
+    const applications = await Application.find({
+      job: { $in: jobIds }
+    })
+      .populate(
+        "job",
+        "title company location category salary type status"
+      )
+      .populate(
+        "applicant",
+        "name email phone location profileImage bio skills resumeUrl"
+      )
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      count: applications.length,
+      applications
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch employer applications",
+      error: error.message
+    });
+  }
+};
+
+// ==========================================
+// UPDATE APPLICATION STATUS
+// ==========================================
+const updateApplicationStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const allowedStatuses = [
+      "pending",
+      "reviewing",
+      "shortlisted",
+      "rejected",
+      "hired"
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        message: "Invalid application status"
+      });
+    }
+
+    const application = await Application.findById(req.params.id);
+
+    if (!application) {
+      return res.status(404).json({
+        message: "Application not found"
+      });
+    }
+
+    const job = await Job.findById(application.job);
+
+    if (!job) {
+      return res.status(404).json({
+        message: "Job not found"
+      });
+    }
+
+    // Make sure this employer owns the job
+    if (job.employer.toString() !== req.user.id) {
+      return res.status(403).json({
+        message: "You are not authorized to update this application"
+      });
+    }
+
+    application.status = status;
+
+    await application.save();
+
+    res.status(200).json({
+      message: "Application status updated successfully",
+      application
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to update application status",
+      error: error.message
+    });
+  }
+};
+
+module.exports = {
+  applyForJob,
+  getMyApplications,
+  getEmployerApplications,
+  updateApplicationStatus
+};

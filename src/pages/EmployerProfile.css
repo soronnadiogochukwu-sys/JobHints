@@ -1,0 +1,184 @@
+.employer-profile-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 30px;
+  background: #f7f9fc;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*Header*/
+
+.employer-profile-header {
+  margin-bottom: 25px;
+}
+
+.employer-profile-header h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.employer-profile-header p {
+  margin: 0;
+  font-size: 15px;
+  color: #6b7280;
+}
+
+/*Profile Card*/
+
+.employer-profile-card {
+  width: 100%;
+  max-width: 850px;
+  padding: 35px;
+  background: #bbbceb;
+  border-radius: 14px;
+  box-sizing: border-box;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+/*Company Avatar */
+
+.company-avatar {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+/*Form */
+
+.employer-profile-form {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 22px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/*Inputs*/
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 13px 14px;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.form-group input {
+  height: 48px;
+}
+
+.form-group textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+/*Disabled Email*/
+
+.form-group input:disabled {
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/*Focus*/
+
+.form-group input:not(:disabled):focus,
+.form-group textarea:focus {
+  border-color: #2563eb;
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/*Save Button*/
+
+.save-profile-btn {
+  width: 100%;
+  max-width: 180px;
+
+  padding: 13px 20px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.save-profile-btn:hover {
+  background: #1d4ed8;
+
+  transform: translateY(-1px);
+}
+
+.save-profile-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .employer-profile-page {
+    padding: 20px;
+  }
+
+  .employer-profile-card {
+    padding: 25px;
+  }
+
+  .employer-profile-header h1 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .employer-profile-page {
+    padding: 15px;
+  }
+
+  .employer-profile-card {
+    padding: 20px;
+  }
+
+  .save-profile-btn {
+    max-width: 100%;
+  }
+}

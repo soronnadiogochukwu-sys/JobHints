@@ -1,0 +1,64 @@
+.feedback-overlay {
+  z-index: 11000;
+}
+
+.feedback-modal {
+  width: 360px;
+  max-width: 92%;
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.feedback-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.feedback-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.feedback-success .feedback-icon {
+  color: #2a9d8f;
+}
+
+.feedback-error .feedback-icon {
+  color: #e63946;
+}
+
+.feedback-info .feedback-icon {
+  color: #1d6ed5;
+}
+
+.feedback-modal h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.feedback-modal p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 1rem;
+}
+
+.feedback-ok {
+  min-width: 110px;
+  padding: 12px 18px;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+  background: #1d6ed5;
+}
+
+.feedback-error .feedback-ok {
+  background: #e63946;
+}
+
+.feedback-success .feedback-ok {
+  background: #2a9d8f;
+}

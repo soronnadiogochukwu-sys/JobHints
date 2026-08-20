@@ -1,0 +1,119 @@
+.dashboard-search-jobs {
+  width: 100%;
+}
+
+.dashboard-search-jobs h1 {
+  margin-bottom: 8px;
+}
+
+.dashboard-search-jobs > p {
+  margin-bottom: 25px;
+  color: #6b7280;
+}
+
+
+/* JOB GRID */
+
+.dashboard-jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+
+/* JOB CARD */
+
+.dashboard-job-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-job-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* LOGO */
+
+.dashboard-job-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+
+
+/* TITLE */
+
+.dashboard-job-card h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #111827;
+}
+
+
+/* COMPANY */
+
+.dashboard-job-company {
+  font-weight: 600;
+  color: #4b5563;
+}
+
+
+/* CARD TEXT */
+
+.dashboard-job-card p {
+  margin: 8px 0;
+  color: #6b7280;
+}
+
+
+/* SALARY */
+
+.dashboard-job-salary {
+  font-weight: 600;
+  color: #4338ca !important;
+}
+
+
+/* VIEW JOB BUTTON */
+
+.dashboard-job-card button {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #6a4df4;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dashboard-job-card button:hover {
+  opacity: 0.9;
+}
+
+
+/* TABLET */
+
+@media (max-width: 1000px) {
+  .dashboard-jobs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+  .dashboard-jobs-grid {
+    grid-template-columns: 1fr;
+  }
+}

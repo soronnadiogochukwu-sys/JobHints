@@ -1,0 +1,116 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 2%;
+  background: #ffffff;
+  box-shadow: 0 10px 35px rgba(15, 23, 42, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.logo .icon {
+  font-size: 1.5rem;
+  color: #6a4df4;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #4b5563;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible {
+  color: #6a4df4;
+}
+
+/* Active link styling for react-router NavLink */
+.nav-links li { position: relative; }
+.nav-links .active {
+  color: #6a4df4;
+  font-weight: 700;
+}
+.nav-links .active::after {
+  content: "";
+  position: absolute;
+  height: 3px;
+  background: #6a4df4;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  border-radius: 2px;
+}
+
+.navbar-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.navbar-buttons span {
+  color: #111827;
+  font-weight: 600;
+}
+
+.navbar-buttons .signup-btn,
+.navbar-buttons .login-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.navbar-buttons .login-btn {
+  background: transparent;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.navbar-buttons .signup-btn {
+  background: #6a4df4;
+  color: #fff;
+}
+
+.navbar-buttons .login-btn:hover,
+.navbar-buttons .login-btn:focus-visible {
+  background: #f3f4f6;
+}
+
+.navbar-buttons .signup-btn:hover,
+.navbar-buttons .signup-btn:focus-visible {
+  background: #5046d9;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 16px 4%;
+  }
+
+  .nav-links {
+    display: none;
+  }
+}

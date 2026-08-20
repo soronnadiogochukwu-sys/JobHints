@@ -1,0 +1,172 @@
+.details {
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.job-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.job-intro {
+  flex: 1 1 420px;
+}
+
+.details h1 {
+  margin: 0 0 12px 0;
+  font-size: 2.25rem;
+  color: #111827;
+  line-height: 1.1;
+}
+
+.company {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.job-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.job-tags span {
+  display: inline-flex;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 0.92rem;
+}
+
+.job-summary-card {
+  min-width: 180px;
+  background: #faf5ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+}
+
+.job-summary-card p {
+  margin: 0 0 8px;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.job-summary-card h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #4338ca;
+}
+
+.details p,
+.job-section p {
+  color: #4b5563;
+  line-height: 1.8;
+  margin: 0 0 18px;
+}
+
+.job-section {
+  margin-bottom: 24px;
+}
+
+.job-section h3 {
+  font-size: 1.2rem;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.details .primary-btn {
+  margin-top: 10px;
+  padding: 14px 20px;
+}
+
+.apply-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.apply-form h2 {
+  margin: 0;
+  color: #111827;
+}
+
+.apply-form input,
+.apply-form textarea,
+.apply-form input[type="file"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  background: #fafafa;
+}
+
+.apply-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.apply-form label {
+  display: block;
+  font-size: 14px;
+  color: #374151;
+  margin-top: 8px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.auth-actions button {
+  flex: 1;
+}
+
+.auth-actions .secondary-btn {
+  border-color: #6a4df4;
+}
+.details .close-button{
+    padding: 10px;
+    border-radius: 20px;
+}
+.job-details-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.back-dashboard-btn {
+  padding: 14px 20px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #fff;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-dashboard-btn:hover {
+  background: #f3f4f6;
+}

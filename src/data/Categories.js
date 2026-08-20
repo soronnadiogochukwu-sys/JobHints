@@ -1,3 +1,4 @@
+
 const categories = [
     "All Categories",
     "Software Development",
@@ -10,5 +11,4 @@ const categories = [
     "Banking",
     "Administration"
 ];
-
-export default categories;
+ export default categories;

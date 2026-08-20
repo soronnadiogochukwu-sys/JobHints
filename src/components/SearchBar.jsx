@@ -55,14 +55,13 @@ function SearchBar(){
                 ))
             }
         </select>
+        
     </div>
+    <button className="job-button-search">
+   <FaSearch/>
+    Search
+   </button>
         </div>
-
-<button>
-
-<FaSearch/>
-Search
-</button>
 
 {/* Popular Searches */}
  <div className="popular-searches">

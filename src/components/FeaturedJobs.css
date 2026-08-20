@@ -1,0 +1,16 @@
+.featured{
+padding:10px 2%;
+margin-bottom: 5px;
+}
+
+.job-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:25px;
+
+}
+.featured .heading{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 7px;
+}
