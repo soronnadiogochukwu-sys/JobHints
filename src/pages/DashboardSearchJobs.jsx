@@ -10,20 +10,26 @@ function DashboardSearchJobs() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await API.get("/jobs");
+  const fetchJobs = async () => {
+    try {
+      console.log("Fetching jobs...");
 
-        setJobs(response.data.jobs || response.data || []);
-      } catch (error) {
-        console.error("Error loading jobs:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const response = await API.get("/jobs");
 
-    fetchJobs();
-  }, []);
+      console.log("Jobs API response:", response.data);
+      console.log("Jobs received:", response.data.jobs);
+
+      setJobs(response.data.jobs);
+    } catch (error) {
+      console.error("Error loading jobs:", error);
+      console.error("Server response:", error.response?.data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchJobs();
+}, []);
 
   if (loading) {
     return <p>Loading jobs...</p>;

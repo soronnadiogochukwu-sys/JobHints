@@ -1,4 +1,5 @@
 const Job = require("../models/Job");
+const User = require("../models/User");
 
 // ==========================================
 // CREATE A NEW JOB
@@ -18,10 +19,19 @@ const createJob = async (req, res) => {
       deadline
     } = req.body;
 
+    // Find the logged-in employer
+    const employer = await User.findById(req.user.id);
+
+    if (!employer) {
+      return res.status(404).json({
+        message: "Employer not found"
+      });
+    }
+
     const job = await Job.create({
       title,
-      company,
-      logo,
+      company: company || employer.name,
+      logo: logo || "",
       description,
       category,
       location,
@@ -29,7 +39,7 @@ const createJob = async (req, res) => {
       type,
       skills,
       deadline,
-      employer: req.user.id
+      employer: employer._id
     });
 
     res.status(201).json({
@@ -38,13 +48,14 @@ const createJob = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Create job error:", error);
+
     res.status(500).json({
       message: "Failed to create job",
       error: error.message
     });
   }
 };
-
 
 // ==========================================
 // GET ALL JOBS

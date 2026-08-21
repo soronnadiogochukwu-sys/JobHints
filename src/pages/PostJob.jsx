@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./PostJob.css";
+import API from "../services/api";
 
 function PostJob() {
   const [jobTitle, setJobTitle] = useState("");
@@ -10,20 +11,36 @@ function PostJob() {
   const [employmentType, setEmploymentType] = useState("");
   const [skills, setSkills] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const token = localStorage.getItem("token");
 
     const jobData = {
-      jobTitle,
-      category,
+      title: jobTitle,
+      company: "JobHints Technologies",
+      logo: "",
       description,
+      category,
       location,
       salary,
-      employmentType,
-      skills,
+      type: employmentType,
+      skills: skills
+        .split(",")
+        .map((skill) => skill.trim())
+        .filter((skill) => skill !== ""),
     };
 
-    console.log("Job Data:", jobData);
+    console.log("Sending job:", jobData);
+
+    const response = await API.post("/jobs", jobData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("Job created:", response.data);
 
     alert("Job created successfully!");
 
@@ -34,7 +51,18 @@ function PostJob() {
     setSalary("");
     setEmploymentType("");
     setSkills("");
-  };
+
+  } catch (error) {
+    console.error("FULL ERROR:", error);
+    console.error("STATUS:", error.response?.status);
+    console.error("DATA:", error.response?.data);
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to create job"
+    );
+  }
+};
 
   return (
     <div className="post-job-page">

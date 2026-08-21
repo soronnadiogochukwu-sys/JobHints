@@ -47,7 +47,7 @@ const jobSchema = new mongoose.Schema(
         "Part-time",
         "Contract",
         "Internship",
-        "Freelance"
+        "Remote"
       ],
       default: "Full-time"
     },
