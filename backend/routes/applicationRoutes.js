@@ -4,7 +4,8 @@ const {
   applyForJob,
   getMyApplications,
   getEmployerApplications,
-  updateApplicationStatus
+  updateApplicationStatus,
+  getEmployerDashboardStats
 } = require("../controllers/applicationController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -34,6 +35,12 @@ router.get(
   authMiddleware,
   roleMiddleware("employer"),
   getEmployerApplications
+);
+router.get(
+  "/employer/dashboard-stats",
+  authMiddleware,
+  roleMiddleware("employer"),
+  getEmployerDashboardStats
 );
 
 router.put(

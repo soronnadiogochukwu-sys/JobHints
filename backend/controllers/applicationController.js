@@ -180,10 +180,53 @@ const updateApplicationStatus = async (req, res) => {
     });
   }
 };
+// ==========================================
+// GET EMPLOYER DASHBOARD STATISTICS
+// ==========================================
+const getEmployerDashboardStats = async (req, res) => {
+  try {
+    // Find all jobs belonging to the logged-in employer
+    const jobs = await Job.find({
+      employer: req.user.id
+    }).select("_id");
+
+    const jobIds = jobs.map((job) => job._id);
+
+    // Get all applications for those jobs
+    const applications = await Application.find({
+      job: { $in: jobIds }
+    }).select("status");
+
+    const jobsPosted = jobs.length;
+    const totalApplications = applications.length;
+
+    const shortlisted = applications.filter(
+      (application) => application.status === "shortlisted"
+    ).length;
+
+    const hired = applications.filter(
+      (application) => application.status === "hired"
+    ).length;
+
+    res.status(200).json({
+      jobsPosted,
+      applications: totalApplications,
+      shortlisted,
+      hired
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch employer dashboard statistics",
+      error: error.message
+    });
+  }
+};
 
 module.exports = {
   applyForJob,
   getMyApplications,
   getEmployerApplications,
-  updateApplicationStatus
+  updateApplicationStatus,
+  getEmployerDashboardStats
 };
