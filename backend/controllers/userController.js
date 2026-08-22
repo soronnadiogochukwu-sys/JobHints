@@ -36,16 +36,18 @@ const updateProfile = async (req, res) => {
     }
 
     const {
-      name,
-      phone,
-      location,
-      bio,
-      skills,
-      profileImage,
-      resumeUrl
-    } = req.body;
+        name,
+        companyName,
+        phone,
+        location,
+        bio,
+        skills,
+        profileImage,
+        resumeUrl
+      } = req.body;
 
     if (name !== undefined) user.name = name;
+    if (companyName !== undefined) user.companyName = companyName;
     if (phone !== undefined) user.phone = phone;
     if (location !== undefined) user.location = location;
     if (bio !== undefined) user.bio = bio;
@@ -60,6 +62,7 @@ const updateProfile = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
+        companyName: user.companyName,
         email: user.email,
         role: user.role,
         phone: user.phone,
