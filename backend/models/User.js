@@ -6,8 +6,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-    },
-
+        },
+      companyName: {
+      type: String,
+      default: "",
+      trim: true,
+       },
     email: {
       type: String,
       required: true,
