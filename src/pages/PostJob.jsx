@@ -16,11 +16,13 @@ function PostJob() {
 
   try {
     const token = localStorage.getItem("token");
+    const currentUser = JSON.parse(
+      localStorage.getItem("currentUser")
+    );
 
     const jobData = {
       title: jobTitle,
-      company: "JobHints Technologies",
-      logo: "",
+      company: currentUser?.companyName || "",
       description,
       category,
       location,
@@ -29,18 +31,25 @@ function PostJob() {
       skills: skills
         .split(",")
         .map((skill) => skill.trim())
-        .filter((skill) => skill !== ""),
+        .filter(Boolean),
     };
 
     console.log("Sending job:", jobData);
 
-    const response = await API.post("/jobs", jobData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await API.post(
+      "/jobs",
+      jobData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-    console.log("Job created:", response.data);
+    console.log(
+      "JOB CREATED:",
+      response.data
+    );
 
     alert("Job created successfully!");
 
@@ -53,13 +62,24 @@ function PostJob() {
     setSkills("");
 
   } catch (error) {
-    console.error("FULL ERROR:", error);
-    console.error("STATUS:", error.response?.status);
-    console.error("DATA:", error.response?.data);
+    console.error(
+      "FULL ERROR:",
+      error
+    );
+
+    console.error(
+      "STATUS:",
+      error.response?.status
+    );
+
+    console.error(
+      "DATA:",
+      error.response?.data
+    );
 
     alert(
       error.response?.data?.message ||
-      "Failed to create job"
+      "Failed to create job."
     );
   }
 };

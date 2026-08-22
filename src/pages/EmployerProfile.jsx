@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./EmployerProfile.css";
+import API from "../services/api";
 
 function EmployerProfile({ currentUser }) {
   const [companyName, setCompanyName] = useState(
@@ -28,11 +29,35 @@ function EmployerProfile({ currentUser }) {
     currentUser?.description || ""
   );
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  console.log("SAVE BUTTON CLICKED");
+
+  try {
+    const token = localStorage.getItem("token");
+
+    console.log("TOKEN:", token);
+
+    const response = await API.put(
+      "/users/profile",
+      {
+        companyName,
+        phone,
+        location,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("PROFILE UPDATE RESPONSE:", response.data);
 
     const updatedUser = {
       ...currentUser,
+      ...response.data.user,
       companyName,
       phone,
       location,
@@ -46,8 +71,18 @@ function EmployerProfile({ currentUser }) {
     );
 
     alert("Company profile updated successfully.");
-  };
 
+  } catch (error) {
+    console.error("PROFILE UPDATE ERROR:", error);
+    console.error("STATUS:", error.response?.status);
+    console.error("DATA:", error.response?.data);
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to update company profile."
+    );
+  }
+};
   return (
     <div className="employer-profile-page">
 
