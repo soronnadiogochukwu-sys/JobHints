@@ -11,78 +11,94 @@ function PostJob() {
   const [employmentType, setEmploymentType] = useState("");
   const [skills, setSkills] = useState("");
 
+  // NEW:
+  // Determines whether the job is for graduates or artisans
+  const [jobFor, setJobFor] = useState("");
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const token = localStorage.getItem("token");
-    const currentUser = JSON.parse(
-      localStorage.getItem("currentUser")
-    );
+    try {
+      const token = localStorage.getItem("token");
 
-    const jobData = {
-      title: jobTitle,
-      company: currentUser?.companyName || "",
-      description,
-      category,
-      location,
-      salary,
-      type: employmentType,
-      skills: skills
-        .split(",")
-        .map((skill) => skill.trim())
-        .filter(Boolean),
-    };
+      const currentUser = JSON.parse(
+        localStorage.getItem("currentUser")
+      );
 
-    console.log("Sending job:", jobData);
+      const jobData = {
+        title: jobTitle,
 
-    const response = await API.post(
-      "/jobs",
-      jobData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+        // KEEPING YOUR COMPANY LOGIC
+        company: currentUser?.companyName || "",
 
-    console.log(
-      "JOB CREATED:",
-      response.data
-    );
+        description,
+        category,
+        location,
+        salary,
+        type: employmentType,
 
-    alert("Job created successfully!");
+        skills: skills
+          .split(",")
+          .map((skill) => skill.trim())
+          .filter(Boolean),
 
-    setJobTitle("");
-    setCategory("");
-    setDescription("");
-    setLocation("");
-    setSalary("");
-    setEmploymentType("");
-    setSkills("");
+        // IMPORTANT:
+        // Backend expects "targetRole"
+        targetRole: jobFor,
+      };
 
-  } catch (error) {
-    console.error(
-      "FULL ERROR:",
-      error
-    );
+      console.log("Sending job:", jobData);
 
-    console.error(
-      "STATUS:",
-      error.response?.status
-    );
+      const response = await API.post(
+        "/jobs",
+        jobData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    console.error(
-      "DATA:",
-      error.response?.data
-    );
+      console.log(
+        "JOB CREATED:",
+        response.data
+      );
 
-    alert(
-      error.response?.data?.message ||
-      "Failed to create job."
-    );
-  }
-};
+      alert("Job created successfully!");
+
+      setJobTitle("");
+      setCategory("");
+      setDescription("");
+      setLocation("");
+      setSalary("");
+      setEmploymentType("");
+      setSkills("");
+
+      // Reset job target
+      setJobFor("");
+
+    } catch (error) {
+      console.error(
+        "FULL ERROR:",
+        error
+      );
+
+      console.error(
+        "STATUS:",
+        error.response?.status
+      );
+
+      console.error(
+        "DATA:",
+        error.response?.data
+      );
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to create job."
+      );
+    }
+  };
 
   return (
     <div className="post-job-page">
@@ -158,6 +174,31 @@ function PostJob() {
 
               <option value="Other">
                 Other
+              </option>
+            </select>
+          </div>
+
+          {/* WHO IS THIS JOB FOR? */}
+          <div className="form-group">
+            <label>Job For</label>
+
+            <select
+              value={jobFor}
+              onChange={(e) =>
+                setJobFor(e.target.value)
+              }
+              required
+            >
+              <option value="">
+                Select who this job is for
+              </option>
+
+              <option value="graduate">
+                Graduate
+              </option>
+
+              <option value="artisan">
+                Artisan
               </option>
             </select>
           </div>

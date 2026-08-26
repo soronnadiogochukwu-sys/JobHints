@@ -5,7 +5,8 @@ const {
   getMyApplications,
   getEmployerApplications,
   updateApplicationStatus,
-  getEmployerDashboardStats
+  getEmployerDashboardStats,
+  getArtisanDashboardStats
 } = require("../controllers/applicationController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -48,5 +49,10 @@ router.put(
   authMiddleware,
   roleMiddleware("employer"),
   updateApplicationStatus
+);
+router.get(
+  "/artisan/dashboard-stats",
+  authMiddleware,
+  getArtisanDashboardStats
 );
 module.exports = router;

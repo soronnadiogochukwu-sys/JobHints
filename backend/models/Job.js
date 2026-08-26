@@ -13,7 +13,8 @@ const jobSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
-        logo: {
+
+    logo: {
       type: String,
       default: ""
     },
@@ -28,6 +29,18 @@ const jobSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true
+    },
+
+    // ==========================================
+    // WHO IS THIS JOB FOR?
+    // ==========================================
+    // Employers can post jobs for either
+    // graduates or artisans.
+
+    targetRole: {
+      type: String,
+      enum: ["graduate", "artisan"],
+      required: true
     },
 
     description: {
@@ -56,6 +69,10 @@ const jobSchema = new mongoose.Schema(
       type: [String],
       default: []
     },
+
+    // ==========================================
+    // EMPLOYER WHO POSTED THE JOB
+    // ==========================================
 
     employer: {
       type: mongoose.Schema.Types.ObjectId,

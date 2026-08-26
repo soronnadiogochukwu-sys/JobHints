@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
-import "./ApplicantDashboard.css"
+import "./ApplicantDashboard.css";
 
 function ApplicantDashboard({ currentUser }) {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -59,7 +62,9 @@ function ApplicantDashboard({ currentUser }) {
   return (
     <div className="dashboard-home">
 
-      {/* WELCOME */}
+      {/* ==========================================
+          WELCOME
+      ========================================== */}
 
       <div className="dashboard-page-header">
 
@@ -78,7 +83,9 @@ function ApplicantDashboard({ currentUser }) {
       </div>
 
 
-      {/* STAT CARDS */}
+      {/* ==========================================
+          STAT CARDS
+      ========================================== */}
 
       <section className="dashboard-stats">
 
@@ -120,7 +127,158 @@ function ApplicantDashboard({ currentUser }) {
       </section>
 
 
-      {/* RECENT APPLICATIONS */}
+      {/* ==========================================
+          QUICK ACTIONS
+      ========================================== */}
+
+      <section className="dashboard-section">
+
+        <div className="section-header">
+
+          <div>
+
+            <h2>
+              Quick Actions
+            </h2>
+
+            <p>
+              Quickly access your most important
+              job search activities.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div className="applicant-actions">
+
+          {/* FIND JOBS */}
+
+          <button
+            type="button"
+            className="applicant-action-card"
+            onClick={() =>
+              navigate("/dashboard/search-jobs")
+            }
+          >
+
+            <span className="action-icon">
+              🔎
+            </span>
+
+            <div>
+
+              <h3>
+                Find Jobs
+              </h3>
+
+              <p>
+                Discover new job opportunities
+                that match your skills.
+              </p>
+
+            </div>
+
+          </button>
+
+
+          {/* APPLICATIONS */}
+
+          <button
+            type="button"
+            className="applicant-action-card"
+            onClick={() =>
+              navigate("/dashboard/applications")
+            }
+          >
+
+            <span className="action-icon">
+              📄
+            </span>
+
+            <div>
+
+              <h3>
+                My Applications
+              </h3>
+
+              <p>
+                View and track the jobs you have
+                applied for.
+              </p>
+
+            </div>
+
+          </button>
+
+
+          {/* SAVED JOBS */}
+
+          <button
+            type="button"
+            className="applicant-action-card"
+            onClick={() =>
+              navigate("/dashboard/saved-jobs")
+            }
+          >
+
+            <span className="action-icon">
+              🔖
+            </span>
+
+            <div>
+
+              <h3>
+                Saved Jobs
+              </h3>
+
+              <p>
+                View jobs you saved for later.
+              </p>
+
+            </div>
+
+          </button>
+
+
+          {/* PROFILE */}
+
+          <button
+            type="button"
+            className="applicant-action-card"
+            onClick={() =>
+              navigate("/dashboard/profile")
+            }
+          >
+
+            <span className="action-icon">
+              👤
+            </span>
+
+            <div>
+
+              <h3>
+                Update Profile
+              </h3>
+
+              <p>
+                Keep your personal information and
+                skills up to date.
+              </p>
+
+            </div>
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      {/* ==========================================
+          RECENT APPLICATIONS
+      ========================================== */}
 
       <section className="dashboard-section">
 

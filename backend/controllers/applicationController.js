@@ -223,10 +223,86 @@ const getEmployerDashboardStats = async (req, res) => {
   }
 };
 
+// ==========================================
+// GET ARTISAN DASHBOARD STATISTICS
+// ==========================================
+// ==========================================
+// GET ARTISAN DASHBOARD STATISTICS
+// ==========================================
+const getArtisanDashboardStats = async (req, res) => {
+  try {
+    // Get all applications submitted by the logged-in artisan
+    const applications = await Application.find({
+      applicant: req.user.id
+    })
+      .populate({
+        path: "job",
+        select: "title company location category salary type status employer",
+        populate: {
+          path: "employer",
+          select: "name companyName email phone location profileImage"
+        }
+      })
+      .sort({ createdAt: -1 });
+
+    // Job requests = applications still waiting for employer response
+    const jobRequests = applications.filter(
+      (application) =>
+        application.status === "pending"
+    ).length;
+
+    // Active jobs = jobs where the artisan has been hired
+    const activeJobs = applications.filter(
+      (application) =>
+        application.status === "hired"
+    ).length;
+
+    // Completed jobs
+    const completedJobs = applications.filter(
+      (application) =>
+        application.status === "completed"
+    ).length;
+
+    // Rating
+    // Until ratings/reviews are implemented, return 0
+    const rating = 0;
+
+    // Employer connections
+    // Show applications that have progressed beyond simple pending
+    const connections = applications.filter(
+      (application) =>
+        application.status === "reviewing" ||
+        application.status === "shortlisted" ||
+        application.status === "hired" ||
+        application.status === "completed"
+    );
+
+    res.status(200).json({
+      jobRequests,
+      activeJobs,
+      completedJobs,
+      rating,
+      connections
+    });
+
+  } catch (error) {
+    console.error(
+      "ARTISAN DASHBOARD ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      message: "Failed to fetch artisan dashboard statistics",
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   applyForJob,
   getMyApplications,
   getEmployerApplications,
   updateApplicationStatus,
-  getEmployerDashboardStats
+  getEmployerDashboardStats,
+  getArtisanDashboardStats
 };

@@ -7,6 +7,7 @@ import "./Signup.css";
 
 function Signup({ close, onSignup }) {
   const [fullName, setFullName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -56,11 +57,15 @@ function Signup({ close, onSignup }) {
 
       // Backend currently accepts:
       // applicant OR employer
-      const backendRole =
-        role === "employer" ? "employer" : "applicant";
-
+      const backendRole = role;
+      console.log("ROLE SELECTED:", role);
+      console.log("ROLE SENT TO BACKEND:", backendRole);
       const response = await API.post("/auth/register", {
         name: fullName.trim(),
+        companyName:
+          role === "employer"
+            ? companyName.trim()
+            : "",
         email: email.trim(),
         password,
         role: backendRole,
@@ -122,6 +127,17 @@ function Signup({ close, onSignup }) {
             onChange={(e) => setFullName(e.target.value)}
             required
           />
+          {role === "employer" && (
+            <input
+              type="text"
+              placeholder="Enter Your Company Name"
+              value={companyName}
+              onChange={(e) =>
+                setCompanyName(e.target.value)
+              }
+              required
+            />
+          )}
 
           <input
             type="email"
@@ -162,7 +178,7 @@ function Signup({ close, onSignup }) {
               Graduate
             </option>
 
-            <option value="applicant">
+            <option value="artisan">
               Artisan
             </option>
           </select>

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ManageJobs.css";
@@ -7,10 +8,12 @@ function ManageJobs({ currentUser }) {
   const navigate = useNavigate();
 
   const [jobs, setJobs] = useState([]);
+  const [applications, setApplications] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Edit modal state
+  // Edit modal
   const [editingJobId, setEditingJobId] = useState(null);
 
   const [editForm, setEditForm] = useState({
@@ -20,37 +23,83 @@ function ManageJobs({ currentUser }) {
     category: "",
     location: "",
     salary: "",
-    type: "",
+    type: "Full-time",
     skills: "",
     deadline: "",
-    status: "Active",
+    status: "open",
   });
 
   // ==========================================
-  // GET EMPLOYER JOBS
+  // GET EMPLOYER JOBS + APPLICATIONS
   // ==========================================
   useEffect(() => {
-    const fetchJobs = async () => {
+    const fetchEmployerData = async () => {
       try {
         setLoading(true);
         setError("");
 
-        const response = await API.get("/jobs");
+        const token = localStorage.getItem("token");
 
-        const allJobs = response.data.jobs || [];
+        if (!token) {
+          setError("You are not logged in.");
+          setLoading(false);
+          return;
+        }
 
-        // Only show jobs belonging to the logged-in employer
-        const employerJobs = currentUser?._id
-          ? allJobs.filter(
-              (job) =>
-                job.employer?._id === currentUser._id ||
-                job.employer === currentUser._id
-            )
-          : [];
+        // Get all jobs
+        const jobsResponse = await API.get("/jobs");
+
+        const allJobs = jobsResponse.data.jobs || [];
+
+        // Current logged-in employer ID
+        const employerId =
+          currentUser?.id || currentUser?._id;
+
+        if (!employerId) {
+          setError(
+            "Employer information could not be found. Please log in again."
+          );
+          setLoading(false);
+          return;
+        }
+
+        // Only show jobs belonging to this employer
+        const employerJobs = allJobs.filter((job) => {
+          const jobEmployerId =
+            job.employer?._id || job.employer;
+
+          return (
+            jobEmployerId?.toString() ===
+            employerId.toString()
+          );
+        });
 
         setJobs(employerJobs);
+
+        // Get applications submitted for this employer's jobs
+        try {
+          const applicationsResponse = await API.get(
+            "/applications/employer"
+          );
+
+          setApplications(
+            applicationsResponse.data.applications || []
+          );
+        } catch (applicationError) {
+          console.error(
+            "Failed to fetch employer applications:",
+            applicationError
+          );
+
+          // Do not break the Manage Jobs page
+          // if applications fail to load.
+          setApplications([]);
+        }
       } catch (error) {
-        console.error("Failed to fetch jobs:", error);
+        console.error(
+          "Failed to fetch employer jobs:",
+          error
+        );
 
         setError(
           error.response?.data?.message ||
@@ -62,11 +111,26 @@ function ManageJobs({ currentUser }) {
     };
 
     if (currentUser) {
-      fetchJobs();
+      fetchEmployerData();
     } else {
       setLoading(false);
     }
   }, [currentUser]);
+
+  // ==========================================
+  // GET NUMBER OF APPLICATIONS FOR A JOB
+  // ==========================================
+  const getJobApplicationCount = (jobId) => {
+    return applications.filter((application) => {
+      const applicationJobId =
+        application.job?._id || application.job;
+
+      return (
+        applicationJobId?.toString() ===
+        jobId.toString()
+      );
+    }).length;
+  };
 
   // ==========================================
   // DELETE JOB
@@ -81,9 +145,22 @@ function ManageJobs({ currentUser }) {
     try {
       await API.delete(`/jobs/${id}`);
 
-      // Remove deleted job from UI
+      // Remove job from UI
       setJobs((currentJobs) =>
         currentJobs.filter((job) => job._id !== id)
+      );
+
+      // Remove applications belonging to deleted job
+      setApplications((currentApplications) =>
+        currentApplications.filter((application) => {
+          const applicationJobId =
+            application.job?._id || application.job;
+
+          return (
+            applicationJobId?.toString() !==
+            id.toString()
+          );
+        })
       );
 
       alert("Job deleted successfully.");
@@ -110,14 +187,19 @@ function ManageJobs({ currentUser }) {
       category: job.category || "",
       location: job.location || "",
       salary: job.salary || "",
-      type: job.type || "",
+      type: job.type || "Full-time",
+
       skills: Array.isArray(job.skills)
         ? job.skills.join(", ")
         : job.skills || "",
+
       deadline: job.deadline
         ? job.deadline.substring(0, 10)
         : "",
-      status: job.status || "Active",
+
+      // IMPORTANT:
+      // Backend uses "open" and "closed"
+      status: job.status || "open",
     });
   };
 
@@ -141,7 +223,13 @@ function ManageJobs({ currentUser }) {
 
     try {
       const updatedJob = {
-        ...editForm,
+        title: editForm.title,
+        company: editForm.company,
+        description: editForm.description,
+        category: editForm.category,
+        location: editForm.location,
+        salary: editForm.salary,
+        type: editForm.type,
 
         skills:
           typeof editForm.skills === "string"
@@ -149,17 +237,34 @@ function ManageJobs({ currentUser }) {
                 .split(",")
                 .map((skill) => skill.trim())
                 .filter(Boolean)
-            : editForm.skills,
+            : [],
+
+        deadline:
+          editForm.deadline || undefined,
+
+        // Backend expects open/closed
+        status: editForm.status,
       };
+
+      console.log(
+        "Updating job:",
+        updatedJob
+      );
 
       const response = await API.put(
         `/jobs/${editingJobId}`,
         updatedJob
       );
 
-      const updatedJobFromServer = response.data.job;
+      console.log(
+        "Updated job response:",
+        response.data
+      );
 
-      // Update UI with database response
+      const updatedJobFromServer =
+        response.data.job;
+
+      // Update job in UI
       setJobs((currentJobs) =>
         currentJobs.map((job) =>
           job._id === editingJobId
@@ -172,7 +277,15 @@ function ManageJobs({ currentUser }) {
 
       alert("Job updated successfully.");
     } catch (error) {
-      console.error("Update job error:", error);
+      console.error(
+        "Update job error:",
+        error
+      );
+
+      console.error(
+        "Update error response:",
+        error.response?.data
+      );
 
       alert(
         error.response?.data?.message ||
@@ -194,21 +307,32 @@ function ManageJobs({ currentUser }) {
   if (loading) {
     return (
       <div className="manage-jobs-page">
+
         <div className="manage-jobs-header">
           <div>
             <h1>Manage Jobs</h1>
-            <p>Loading your jobs...</p>
+
+            <p>
+              Loading your jobs...
+            </p>
           </div>
         </div>
 
         <div className="jobs-table-card">
+
           <div className="no-jobs">
+
             <h3>Loading Jobs...</h3>
+
             <p>
-              Please wait while we load your posted jobs.
+              Please wait while we load
+              your posted jobs.
             </p>
+
           </div>
+
         </div>
+
       </div>
     );
   }
@@ -219,38 +343,54 @@ function ManageJobs({ currentUser }) {
   if (error) {
     return (
       <div className="manage-jobs-page">
+
         <div className="manage-jobs-header">
+
           <div>
             <h1>Manage Jobs</h1>
+
             <p>
-              View and manage all the jobs you have posted.
+              View and manage all the jobs
+              you have posted.
             </p>
           </div>
 
           <button
             className="manage-post-btn"
             onClick={() =>
-              navigate("/dashboard/post-job")
+              navigate(
+                "/dashboard/post-job"
+              )
             }
           >
             + Post a Job
           </button>
+
         </div>
 
         <div className="jobs-table-card">
+
           <div className="no-jobs">
-            <h3>Unable to Load Jobs</h3>
+
+            <h3>
+              Unable to Load Jobs
+            </h3>
 
             <p>{error}</p>
 
             <button
               className="manage-post-btn"
-              onClick={() => window.location.reload()}
+              onClick={() =>
+                window.location.reload()
+              }
             >
               Try Again
             </button>
+
           </div>
+
         </div>
+
       </div>
     );
   }
@@ -258,15 +398,15 @@ function ManageJobs({ currentUser }) {
   // ==========================================
   // SUMMARY DATA
   // ==========================================
+
+  // Backend status is "open" / "closed"
   const activeJobs = jobs.filter(
-    (job) => job.status === "Active"
+    (job) => job.status === "open"
   ).length;
 
-  const totalApplicants = jobs.reduce(
-    (total, job) =>
-      total + (job.applicants?.length || job.applicants || 0),
-    0
-  );
+  // Total applications for this employer
+  const totalApplicants =
+    applications.length;
 
   // ==========================================
   // PAGE
@@ -278,17 +418,22 @@ function ManageJobs({ currentUser }) {
       <div className="manage-jobs-header">
 
         <div>
+
           <h1>Manage Jobs</h1>
 
           <p>
-            View and manage all the jobs you have posted.
+            View and manage all the jobs
+            you have posted.
           </p>
+
         </div>
 
         <button
           className="manage-post-btn"
           onClick={() =>
-            navigate("/dashboard/post-job")
+            navigate(
+              "/dashboard/post-job"
+            )
           }
         >
           + Post a Job
@@ -300,27 +445,39 @@ function ManageJobs({ currentUser }) {
       <div className="jobs-summary">
 
         <div className="job-summary-card">
-          <span>Total Jobs</span>
+
+          <span>
+            Total Jobs
+          </span>
 
           <strong>
             {jobs.length}
           </strong>
+
         </div>
 
         <div className="job-summary-card">
-          <span>Active Jobs</span>
+
+          <span>
+            Active Jobs
+          </span>
 
           <strong>
             {activeJobs}
           </strong>
+
         </div>
 
         <div className="job-summary-card">
-          <span>Total Applicants</span>
+
+          <span>
+            Total Applicants
+          </span>
 
           <strong>
             {totalApplicants}
           </strong>
+
         </div>
 
       </div>
@@ -332,17 +489,22 @@ function ManageJobs({ currentUser }) {
 
           <div className="no-jobs">
 
-            <h3>No Jobs Posted Yet</h3>
+            <h3>
+              No Jobs Posted Yet
+            </h3>
 
             <p>
               You haven't posted any jobs yet.
-              Create your first job opportunity to get started.
+              Create your first job opportunity
+              to get started.
             </p>
 
             <button
               className="manage-post-btn"
               onClick={() =>
-                navigate("/dashboard/post-job")
+                navigate(
+                  "/dashboard/post-job"
+                )
               }
             >
               Post Your First Job
@@ -360,6 +522,7 @@ function ManageJobs({ currentUser }) {
 
                 <tr>
                   <th>Job Title</th>
+                  <th>Company</th>
                   <th>Category</th>
                   <th>Location</th>
                   <th>Type</th>
@@ -376,46 +539,66 @@ function ManageJobs({ currentUser }) {
 
                   <tr key={job._id}>
 
+                    {/* JOB TITLE */}
                     <td>
                       <strong>
                         {job.title}
                       </strong>
                     </td>
 
+                    {/* COMPANY */}
                     <td>
-                      {job.category || "N/A"}
+                      {job.company ||
+                        "Company not specified"}
                     </td>
 
+                    {/* CATEGORY */}
                     <td>
-                      {job.location || "N/A"}
+                      {job.category ||
+                        "N/A"}
                     </td>
 
+                    {/* LOCATION */}
                     <td>
-                      {job.type || "N/A"}
+                      {job.location ||
+                        "N/A"}
                     </td>
 
+                    {/* TYPE */}
                     <td>
+                      {job.type ||
+                        "N/A"}
+                    </td>
+
+                    {/* APPLICATION COUNT */}
+                    <td>
+
                       <span className="applicant-count">
-                        {job.applicants?.length ||
-                          job.applicants ||
-                          0}
+                        {getJobApplicationCount(
+                          job._id
+                        )}
                       </span>
+
                     </td>
 
+                    {/* STATUS */}
                     <td>
 
                       <span
                         className={`job-status ${
-                          job.status === "Active"
+                          job.status === "open"
                             ? "active"
                             : "inactive"
                         }`}
                       >
-                        {job.status || "Inactive"}
+                        {job.status === "open"
+                          ? "Open"
+                          : "Closed"}
                       </span>
 
                     </td>
 
+                    {/* ACTIONS */}
                     <td>
 
                       <div className="job-actions">
@@ -432,7 +615,9 @@ function ManageJobs({ currentUser }) {
                         <button
                           className="delete-job-btn"
                           onClick={() =>
-                            handleDelete(job._id)
+                            handleDelete(
+                              job._id
+                            )
                           }
                         >
                           Delete
@@ -465,127 +650,198 @@ function ManageJobs({ currentUser }) {
 
           <div className="edit-modal">
 
-            <h3>Edit Job</h3>
+            <h3>
+              Edit Job
+            </h3>
 
             <form
               onSubmit={handleSaveEdit}
               className="edit-form"
             >
 
+              {/* JOB TITLE */}
               <label>
                 Job Title
 
                 <input
                   name="title"
                   value={editForm.title}
-                  onChange={handleEditChange}
+                  onChange={
+                    handleEditChange
+                  }
                   required
                 />
               </label>
 
+              {/* COMPANY */}
               <label>
                 Company
 
                 <input
                   name="company"
-                  value={editForm.company}
-                  onChange={handleEditChange}
+                  value={
+                    editForm.company
+                  }
+                  onChange={
+                    handleEditChange
+                  }
+                  required
                 />
               </label>
 
+              {/* CATEGORY */}
               <label>
                 Category
 
                 <input
                   name="category"
-                  value={editForm.category}
-                  onChange={handleEditChange}
+                  value={
+                    editForm.category
+                  }
+                  onChange={
+                    handleEditChange
+                  }
                   required
                 />
               </label>
 
+              {/* LOCATION */}
               <label>
                 Location
 
                 <input
                   name="location"
-                  value={editForm.location}
-                  onChange={handleEditChange}
+                  value={
+                    editForm.location
+                  }
+                  onChange={
+                    handleEditChange
+                  }
                   required
                 />
               </label>
 
+              {/* JOB TYPE */}
               <label>
                 Job Type
 
-                <input
+                <select
                   name="type"
                   value={editForm.type}
-                  onChange={handleEditChange}
-                />
+                  onChange={
+                    handleEditChange
+                  }
+                >
+                  <option value="Full-time">
+                    Full-time
+                  </option>
+
+                  <option value="Part-time">
+                    Part-time
+                  </option>
+
+                  <option value="Contract">
+                    Contract
+                  </option>
+
+                  <option value="Internship">
+                    Internship
+                  </option>
+
+                  <option value="Freelance">
+                    Freelance
+                  </option>
+                </select>
               </label>
 
+              {/* SALARY */}
               <label>
                 Salary
 
                 <input
                   name="salary"
-                  value={editForm.salary}
-                  onChange={handleEditChange}
+                  value={
+                    editForm.salary
+                  }
+                  onChange={
+                    handleEditChange
+                  }
                 />
               </label>
 
+              {/* SKILLS */}
               <label>
                 Skills
 
                 <input
                   name="skills"
-                  value={editForm.skills}
-                  onChange={handleEditChange}
+                  value={
+                    editForm.skills
+                  }
+                  onChange={
+                    handleEditChange
+                  }
                   placeholder="React, JavaScript, CSS"
                 />
               </label>
 
+              {/* DEADLINE */}
               <label>
                 Deadline
 
                 <input
                   type="date"
                   name="deadline"
-                  value={editForm.deadline}
-                  onChange={handleEditChange}
+                  value={
+                    editForm.deadline
+                  }
+                  onChange={
+                    handleEditChange
+                  }
                 />
               </label>
 
+              {/* STATUS */}
               <label>
                 Status
 
                 <select
                   name="status"
-                  value={editForm.status}
-                  onChange={handleEditChange}
+                  value={
+                    editForm.status
+                  }
+                  onChange={
+                    handleEditChange
+                  }
                 >
-                  <option value="Active">
-                    Active
+                  <option value="open">
+                    Open
                   </option>
 
-                  <option value="Inactive">
-                    Inactive
+                  <option value="closed">
+                    Closed
                   </option>
                 </select>
               </label>
 
+              {/* DESCRIPTION */}
               <label>
                 Description
 
                 <textarea
                   name="description"
-                  value={editForm.description}
-                  onChange={handleEditChange}
+                  value={
+                    editForm.description
+                  }
+                  onChange={
+                    handleEditChange
+                  }
                   rows="5"
+                  required
                 />
               </label>
 
+              {/* ACTIONS */}
               <div className="edit-form-actions">
 
                 <button
@@ -598,7 +854,9 @@ function ManageJobs({ currentUser }) {
                 <button
                   type="button"
                   className="cancel-btn"
-                  onClick={handleCancelEdit}
+                  onClick={
+                    handleCancelEdit
+                  }
                 >
                   Cancel
                 </button>

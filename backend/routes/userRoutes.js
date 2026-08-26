@@ -2,17 +2,34 @@ const express = require("express");
 
 const {
   getProfile,
-  updateProfile
+  updateProfile,
 } = require("../controllers/userController");
 
 const authMiddleware = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
 
-// Get logged-in user's profile
-router.get("/profile", authMiddleware, getProfile);
+// ==========================================
+// GET PROFILE
+// ==========================================
 
-// Update logged-in user's profile
-router.put("/profile", authMiddleware, updateProfile);
+router.get(
+  "/profile",
+  authMiddleware,
+  getProfile
+);
+
+// ==========================================
+// UPDATE PROFILE
+// Employer uploads COMPANY LOGO only
+// ==========================================
+
+router.put(
+  "/profile",
+  authMiddleware,
+  upload.single("profileImage"),
+  updateProfile
+);
 
 module.exports = router;

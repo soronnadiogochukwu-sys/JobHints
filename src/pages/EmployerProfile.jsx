@@ -4,14 +4,10 @@ import API from "../services/api";
 
 function EmployerProfile({ currentUser }) {
   const [companyName, setCompanyName] = useState(
-    currentUser?.companyName ||
-    currentUser?.name ||
-    ""
+    currentUser?.companyName || ""
   );
 
-  const [email] = useState(
-    currentUser?.email || ""
-  );
+  const [email] = useState(currentUser?.email || "");
 
   const [phone, setPhone] = useState(
     currentUser?.phone || ""
@@ -29,60 +25,138 @@ function EmployerProfile({ currentUser }) {
     currentUser?.description || ""
   );
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const [profileImage, setProfileImage] = useState(
+    currentUser?.profileImage || ""
+  );
 
-  console.log("SAVE BUTTON CLICKED");
+  const [logoFile, setLogoFile] = useState(null);
 
-  try {
-    const token = localStorage.getItem("token");
+  const [loading, setLoading] = useState(false);
 
-    console.log("TOKEN:", token);
+  const handleLogoChange = (e) => {
+    const file = e.target.files?.[0] || null;
 
-    const response = await API.put(
-      "/users/profile",
-      {
-        companyName,
-        phone,
-        location,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    console.log("========== LOGO SELECTED ==========");
+    console.log("FILE:", file);
+
+    if (file) {
+      console.log("FILE NAME:", file.name);
+      console.log("FILE TYPE:", file.type);
+      console.log("FILE SIZE:", file.size);
+    }
+
+    console.log("===================================");
+
+    setLogoFile(file);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+
+      formData.append("companyName", companyName);
+      formData.append("phone", phone);
+      formData.append("location", location);
+
+      if (logoFile) {
+        formData.append("profileImage", logoFile);
       }
-    );
 
-    console.log("PROFILE UPDATE RESPONSE:", response.data);
+      // ==========================================
+      // CHECK EXACTLY WHAT IS BEING SENT
+      // ==========================================
 
-    const updatedUser = {
-      ...currentUser,
-      ...response.data.user,
-      companyName,
-      phone,
-      location,
-      website,
-      description,
-    };
+      console.log("========== PROFILE UPDATE ==========");
+      console.log("Company Name:", companyName);
+      console.log("Phone:", phone);
+      console.log("Location:", location);
+      console.log("Logo File:", logoFile);
 
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify(updatedUser)
-    );
+      for (const [key, value] of formData.entries()) {
+        console.log("FORM DATA:", key, value);
+      }
 
-    alert("Company profile updated successfully.");
+      console.log("====================================");
 
-  } catch (error) {
-    console.error("PROFILE UPDATE ERROR:", error);
-    console.error("STATUS:", error.response?.status);
-    console.error("DATA:", error.response?.data);
+      // ==========================================
+      // SEND TO BACKEND
+      // ==========================================
 
-    alert(
-      error.response?.data?.message ||
-      "Failed to update company profile."
-    );
-  }
-};
+      const response = await API.put(
+        "/users/profile",
+        formData
+      );
+
+      console.log(
+        "PROFILE UPDATE RESPONSE:",
+        response.data
+      );
+
+      // ==========================================
+      // UPDATE CURRENT USER
+      // ==========================================
+
+      const updatedUser = {
+        ...currentUser,
+        ...response.data.user,
+        companyName: response.data.user.companyName,
+        phone: response.data.user.phone,
+        location: response.data.user.location,
+        profileImage:
+          response.data.user.profileImage || "",
+        website,
+        description,
+      };
+
+      // ==========================================
+      // UPDATE LOGO PREVIEW
+      // ==========================================
+
+      setProfileImage(
+        response.data.user.profileImage || ""
+      );
+
+      // ==========================================
+      // SAVE UPDATED USER LOCALLY
+      // ==========================================
+
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify(updatedUser)
+      );
+
+      // Clear selected file
+      setLogoFile(null);
+
+      alert("Company profile updated successfully.");
+
+    } catch (error) {
+      console.error(
+        "========== PROFILE UPDATE ERROR =========="
+      );
+
+      console.error("ERROR:", error);
+      console.error("STATUS:", error.response?.status);
+      console.error("DATA:", error.response?.data);
+
+      console.error(
+        "=========================================="
+      );
+
+      alert(
+        error.response?.data?.message ||
+        "Profile update failed."
+      );
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="employer-profile-page">
 
@@ -96,10 +170,20 @@ function EmployerProfile({ currentUser }) {
 
       <div className="employer-profile-card">
 
+        {/* COMPANY LOGO */}
         <div className="company-avatar">
-          {(companyName || "C")
-            .charAt(0)
-            .toUpperCase()}
+
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt="Company Logo"
+            />
+          ) : (
+            (companyName || "C")
+              .charAt(0)
+              .toUpperCase()
+          )}
+
         </div>
 
         <form
@@ -107,6 +191,7 @@ function EmployerProfile({ currentUser }) {
           onSubmit={handleSubmit}
         >
 
+          {/* COMPANY NAME */}
           <div className="form-group">
             <label>Company Name</label>
 
@@ -121,6 +206,26 @@ function EmployerProfile({ currentUser }) {
             />
           </div>
 
+
+          {/* COMPANY LOGO */}
+          <div className="form-group">
+            <label>Company Logo</label>
+
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
+              onChange={handleLogoChange}
+            />
+
+            {logoFile && (
+              <small>
+                Selected: {logoFile.name}
+              </small>
+            )}
+          </div>
+
+
+          {/* EMAIL */}
           <div className="form-group">
             <label>Email</label>
 
@@ -131,6 +236,8 @@ function EmployerProfile({ currentUser }) {
             />
           </div>
 
+
+          {/* PHONE */}
           <div className="form-group">
             <label>Phone</label>
 
@@ -144,6 +251,8 @@ function EmployerProfile({ currentUser }) {
             />
           </div>
 
+
+          {/* LOCATION */}
           <div className="form-group">
             <label>Company Location</label>
 
@@ -157,6 +266,8 @@ function EmployerProfile({ currentUser }) {
             />
           </div>
 
+
+          {/* WEBSITE */}
           <div className="form-group">
             <label>Company Website</label>
 
@@ -170,6 +281,8 @@ function EmployerProfile({ currentUser }) {
             />
           </div>
 
+
+          {/* DESCRIPTION */}
           <div className="form-group">
             <label>Company Description</label>
 
@@ -183,11 +296,16 @@ function EmployerProfile({ currentUser }) {
             />
           </div>
 
+
+          {/* SAVE */}
           <button
             type="submit"
             className="save-profile-btn"
+            disabled={loading}
           >
-            Save Changes
+            {loading
+              ? "Saving..."
+              : "Save Changes"}
           </button>
 
         </form>
@@ -199,3 +317,4 @@ function EmployerProfile({ currentUser }) {
 }
 
 export default EmployerProfile;
+

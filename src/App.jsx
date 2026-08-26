@@ -37,6 +37,9 @@ import EmployerSettings from "./pages/EmployerSettings";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import EmployerDashboardLayout from "./components/EmployerDashboardLayout";
 
+import ArtisanDashboard from "./pages/ArtisanDashboard";
+import ArtisanDashboardLayout from "./components/ArtisanDashboardLayout";
+
 import EmployerRoute from "./components/EmployerRoute";
 
 import "./App.css";
@@ -62,11 +65,7 @@ function App() {
 
       return savedUser ? JSON.parse(savedUser) : null;
     } catch (error) {
-      console.error(
-        "Error reading current user:",
-        error
-      );
-
+      console.error("Error reading current user:", error);
       return null;
     }
   });
@@ -104,9 +103,6 @@ function App() {
 
   // ==========================================
   // NAVBAR BUTTONS
-  //
-  // Login and Signup are MODALS.
-  // Do not add /login or /signup routes.
   // ==========================================
 
   const buttons = {
@@ -139,21 +135,20 @@ function App() {
   const handleLogin = (user) => {
     console.log("Logged in user:", user);
 
-    // Save user in React state
     setCurrentUser(user);
 
-    // Save user in localStorage
     localStorage.setItem(
       "currentUser",
       JSON.stringify(user)
     );
 
-    // Close login modal
     setShowLogin(false);
 
     // ========================================
-    // BOTH ROLES ENTER THROUGH /dashboard
-    // The dashboard decides which layout to show.
+    // ALL USERS ENTER THROUGH /dashboard
+    //
+    // The role determines which dashboard
+    // layout is displayed.
     // ========================================
 
     navigate("/dashboard");
@@ -162,26 +157,16 @@ function App() {
   // ==========================================
   // SIGNUP SUCCESS
   // ==========================================
-  //
-  // IMPORTANT:
-  // Signup creates the account in MongoDB.
-  // It does NOT log the user in automatically.
-  //
-  // After successful signup, the user can close
-  // the success message and click Login.
-  // ==========================================
 
   const handleSignup = () => {
     setShowSignup(false);
 
-    // We intentionally do NOT:
-    //
-    // setCurrentUser(...)
-    //
-    // and we do NOT navigate to dashboard.
-    //
-    // The user must login with the account
-    // they just created.
+    /*
+      Signup does NOT automatically log the user in.
+
+      The user must use the Login modal
+      after creating an account.
+    */
   };
 
   return (
@@ -261,17 +246,13 @@ function App() {
         {/* ======================================
             MAIN DASHBOARD
 
-            ONE /dashboard ROUTE FOR BOTH ROLES
+            APPLICANT
+            EMPLOYER
+            ARTISAN
 
-            Employer:
-            EmployerDashboardLayout
-            +
-            EmployerDashboard
+            ALL USE /dashboard
 
-            Applicant:
-            DashboardLayout
-            +
-            ApplicantDashboard
+            But each role gets its own layout.
         ====================================== */}
 
         <Route
@@ -280,17 +261,38 @@ function App() {
             <ProtectedRoute
               currentUser={currentUser}
             >
+
+              {/* ==================================
+                  EMPLOYER
+              ================================== */}
+
               {currentUser?.role === "employer" ? (
                 <EmployerDashboardLayout
                   currentUser={currentUser}
                   onLogout={handleLogout}
                 />
+
+              /* ==================================
+                 ARTISAN
+              ================================== */
+
+              ) : currentUser?.role === "artisan" ? (
+                <ArtisanDashboardLayout
+                  currentUser={currentUser}
+                  onLogout={handleLogout}
+                />
+
+              /* ==================================
+                 APPLICANT
+              ================================== */
+
               ) : (
                 <DashboardLayout
                   currentUser={currentUser}
                   onLogout={handleLogout}
                 />
               )}
+
             </ProtectedRoute>
           }
         >
@@ -306,6 +308,12 @@ function App() {
                 <EmployerDashboard
                   currentUser={currentUser}
                 />
+
+              ) : currentUser?.role === "artisan" ? (
+                <ArtisanDashboard
+                  currentUser={currentUser}
+                />
+
               ) : (
                 <ApplicantDashboard
                   currentUser={currentUser}
@@ -315,57 +323,113 @@ function App() {
           />
 
           {/* ====================================
-              APPLICANT ROUTES
+              SEARCH JOBS
+
+              Applicant and Artisan can both
+              access this route.
+
+              The actual filtering will be
+              handled by the job-search logic.
           ==================================== */}
 
           <Route
             path="search-jobs"
             element={
-              <DashboardSearchJobs />
-            }
-          />
-
-          <Route
-            path="applications"
-            element={
-              <DashboardApplications />
-            }
-          />
-
-          <Route
-            path="saved-jobs"
-            element={
-              <DashboardSavedJobs />
-            }
-          />
-
-          <Route
-            path="messages"
-            element={
-              <DashboardMessages />
-            }
-          />
-
-          <Route
-            path="notifications"
-            element={
-              <DashboardNotifications />
-            }
-          />
-
-          <Route
-            path="profile"
-            element={
-              <DashboardProfile
+              <DashboardSearchJobs
                 currentUser={currentUser}
               />
             }
           />
 
+          {/* ====================================
+              APPLICATIONS
+          ==================================== */}
+
+          <Route
+            path="applications"
+            element={
+              <DashboardApplications
+                currentUser={currentUser}
+              />
+            }
+          />
+
+          {/* ====================================
+              SAVED JOBS
+          ==================================== */}
+
+          <Route
+            path="saved-jobs"
+            element={
+              <DashboardSavedJobs
+                currentUser={currentUser}
+              />
+            }
+          />
+
+          {/* ====================================
+              MESSAGES
+          ==================================== */}
+
+          <Route
+            path="messages"
+            element={
+              <DashboardMessages
+                currentUser={currentUser}
+              />
+            }
+          />
+
+          {/* ====================================
+              NOTIFICATIONS
+          ==================================== */}
+
+          <Route
+            path="notifications"
+            element={
+              <DashboardNotifications
+                currentUser={currentUser}
+              />
+            }
+          />
+
+          {/* ====================================
+              APPLICANT PROFILE
+          ==================================== */}
+
+          <Route
+            path="profile"
+            element={
+              currentUser?.role === "applicant" ? (
+                <DashboardProfile
+                  currentUser={currentUser}
+                />
+              ) : (
+                <Navigate
+                  to="/dashboard"
+                  replace
+                />
+              )
+            }
+          />
+
+          {/* ====================================
+              APPLICANT SETTINGS
+          ==================================== */}
+
           <Route
             path="settings"
             element={
-              <DashboardSettings />
+              currentUser?.role === "applicant" ? (
+                <DashboardSettings
+                  currentUser={currentUser}
+                />
+              ) : (
+                <Navigate
+                  to="/dashboard"
+                  replace
+                />
+              )
             }
           />
 
@@ -435,6 +499,101 @@ function App() {
                   currentUser={currentUser}
                 />
               </EmployerRoute>
+            }
+          />
+
+          {/* ====================================
+              ARTISAN ROUTES
+
+              THESE ARE INSIDE /dashboard.
+
+              Therefore:
+
+              /dashboard/hire-requests
+              /dashboard/my-jobs
+              /dashboard/artisan-profile
+              /dashboard/artisan-settings
+          ==================================== */}
+
+          <Route
+            path="hire-requests"
+            element={
+              currentUser?.role === "artisan" ? (
+                <div>
+                  <h1>Hire Requests</h1>
+
+                  <p>
+                    Employers who want to hire you
+                    will appear here.
+                  </p>
+                </div>
+              ) : (
+                <Navigate
+                  to="/dashboard"
+                  replace
+                />
+              )
+            }
+          />
+
+          <Route
+            path="my-jobs"
+            element={
+              currentUser?.role === "artisan" ? (
+                <div>
+                  <h1>My Jobs</h1>
+
+                  <p>
+                    Your active and completed jobs
+                    will appear here.
+                  </p>
+                </div>
+              ) : (
+                <Navigate
+                  to="/dashboard"
+                  replace
+                />
+              )
+            }
+          />
+
+          <Route
+            path="artisan-profile"
+            element={
+              currentUser?.role === "artisan" ? (
+                <div>
+                  <h1>Artisan Profile</h1>
+
+                  <p>
+                    Manage your artisan profile.
+                  </p>
+                </div>
+              ) : (
+                <Navigate
+                  to="/dashboard"
+                  replace
+                />
+              )
+            }
+          />
+
+          <Route
+            path="artisan-settings"
+            element={
+              currentUser?.role === "artisan" ? (
+                <div>
+                  <h1>Artisan Settings</h1>
+
+                  <p>
+                    Manage your artisan account settings.
+                  </p>
+                </div>
+              ) : (
+                <Navigate
+                  to="/dashboard"
+                  replace
+                />
+              )
             }
           />
 

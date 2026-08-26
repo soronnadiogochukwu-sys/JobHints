@@ -1,6 +1,48 @@
+import { useEffect, useState } from "react";
+import API from "../services/api";
 import "./EmployerDashboard.css";
 
 function EmployerDashboard({ currentUser }) {
+  const [stats, setStats] = useState({
+    jobsPosted: 0,
+    applications: 0,
+    shortlisted: 0,
+    hired: 0,
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await API.get(
+          "/applications/employer/dashboard-stats",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log("EMPLOYER DASHBOARD STATS:", response.data);
+
+        setStats(response.data);
+
+      } catch (error) {
+        console.error(
+          "Error loading employer dashboard stats:",
+          error
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardStats();
+  }, []);
+
   return (
     <div className="employer-dashboard">
 
@@ -24,7 +66,10 @@ function EmployerDashboard({ currentUser }) {
           <div className="stat-icon">💼</div>
 
           <div>
-            <h3>0</h3>
+            <h3>
+              {loading ? "..." : stats.jobsPosted}
+            </h3>
+
             <p>Jobs Posted</p>
           </div>
         </div>
@@ -33,7 +78,10 @@ function EmployerDashboard({ currentUser }) {
           <div className="stat-icon">📄</div>
 
           <div>
-            <h3>0</h3>
+            <h3>
+              {loading ? "..." : stats.applications}
+            </h3>
+
             <p>Applications</p>
           </div>
         </div>
@@ -42,7 +90,10 @@ function EmployerDashboard({ currentUser }) {
           <div className="stat-icon">⭐</div>
 
           <div>
-            <h3>0</h3>
+            <h3>
+              {loading ? "..." : stats.shortlisted}
+            </h3>
+
             <p>Shortlisted</p>
           </div>
         </div>
@@ -51,7 +102,10 @@ function EmployerDashboard({ currentUser }) {
           <div className="stat-icon">✅</div>
 
           <div>
-            <h3>0</h3>
+            <h3>
+              {loading ? "..." : stats.hired}
+            </h3>
+
             <p>Hired</p>
           </div>
         </div>
@@ -72,32 +126,38 @@ function EmployerDashboard({ currentUser }) {
         <div className="employer-actions">
 
           <button
-          className="employer-action-card"
-          onClick={() => (window.location.href = "/dashboard/post-job")}
-        >
-          <span className="action-icon">➕</span>
+            className="employer-action-card"
+            onClick={() =>
+              (window.location.href = "/dashboard/post-job")
+            }
+          >
+            <span className="action-icon">➕</span>
 
-          <div>
-            <h3>Post a Job</h3>
-            <p>Create a new job opportunity.</p>
-          </div>
-        </button>
-
-          <button
-              className="employer-action-card"
-              onClick={() => (window.location.href = "/dashboard/applicants")}
-            >
-              <span className="action-icon">👥</span>
-
-              <div>
-                <h3>View Applicants</h3>
-                <p>Review candidates who applied.</p>
-              </div>
-            </button>
+            <div>
+              <h3>Post a Job</h3>
+              <p>Create a new job opportunity.</p>
+            </div>
+          </button>
 
           <button
             className="employer-action-card"
-            onClick={() => (window.location.href = "/dashboard/manage-jobs")}
+            onClick={() =>
+              (window.location.href = "/dashboard/applicants")
+            }
+          >
+            <span className="action-icon">👥</span>
+
+            <div>
+              <h3>View Applicants</h3>
+              <p>Review candidates who applied.</p>
+            </div>
+          </button>
+
+          <button
+            className="employer-action-card"
+            onClick={() =>
+              (window.location.href = "/dashboard/manage-jobs")
+            }
           >
             <span className="action-icon">📋</span>
 
@@ -126,11 +186,18 @@ function EmployerDashboard({ currentUser }) {
 
           <div className="empty-icon">📄</div>
 
-          <h3>No Applications Yet</h3>
+          <h3>
+            {stats.applications > 0
+              ? `${stats.applications} Application${
+                  stats.applications > 1 ? "s" : ""
+                } Received`
+              : "No Applications Yet"}
+          </h3>
 
           <p>
-            Once applicants apply for your jobs,
-            their applications will appear here.
+            {stats.applications > 0
+              ? "You have applications waiting for review."
+              : "Once applicants apply for your jobs, their applications will appear here."}
           </p>
 
         </div>

@@ -1,0 +1,652 @@
+/* ==========================================
+   ARTISAN DASHBOARD
+========================================== */
+
+.artisan-dashboard {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
+  color: #111827;
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.artisan-dashboard-header {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.artisan-dashboard-header h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #111827;
+}
+
+.artisan-dashboard-header p {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   STATISTICS
+========================================== */
+
+.artisan-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 35px;
+}
+
+.artisan-stat-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  padding: 22px;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  min-width: 0;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.artisan-stat-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* ==========================================
+   STAT ICON
+========================================== */
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+
+  min-width: 50px;
+
+  border-radius: 12px;
+
+  background: #f3f1ff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 23px;
+}
+
+.artisan-stat-card h3 {
+  margin: 0 0 4px;
+
+  font-size: 24px;
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.artisan-stat-card p {
+  margin: 0;
+
+  font-size: 14px;
+
+  color: #6b7280;
+}
+
+/* ==========================================
+   SECTIONS
+========================================== */
+
+.artisan-section {
+  width: 100%;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 16px;
+
+  padding: 25px;
+
+  margin-bottom: 25px;
+
+  box-sizing: border-box;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+/* ==========================================
+   SECTION HEADING
+========================================== */
+
+.section-heading {
+  margin-bottom: 20px;
+}
+
+.section-heading h2 {
+  margin: 0;
+
+  font-size: 21px;
+
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.section-heading p {
+  margin: 6px 0 0;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  color: #6b7280;
+}
+
+/* ==========================================
+   QUICK ACTIONS
+========================================== */
+
+.applicant-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+
+.applicant-action-card {
+  width: 100%;
+
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+
+  border-radius: 12px;
+
+  padding: 20px;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 15px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  box-sizing: border-box;
+}
+
+.applicant-action-card:hover {
+  transform: translateY(-2px);
+
+  border-color: #6a4df4;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ==========================================
+   ACTION ICON
+========================================== */
+
+.applicant-action-icon {
+  width: 45px;
+  height: 45px;
+
+  min-width: 45px;
+
+  border-radius: 10px;
+
+  background: #f3f1ff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 21px;
+}
+
+.applicant-action-card h3 {
+  margin: 0 0 6px;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  color: #111827;
+}
+
+.applicant-action-card p {
+  margin: 0;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  color: #6b7280;
+}
+
+
+/* ==========================================
+   QUICK ACTION SECTION
+========================================== */
+
+.dashboard-quick-actions {
+  width: 100%;
+
+  margin-top: 30px;
+
+  margin-bottom: 30px;
+}
+
+.dashboard-quick-actions .section-header {
+  margin-bottom: 20px;
+}
+
+.dashboard-quick-actions .section-header h2 {
+  margin: 0 0 6px;
+
+  font-size: 20px;
+
+  color: #111827;
+}
+
+.dashboard-quick-actions .section-header p {
+  margin: 0;
+
+  font-size: 14px;
+
+  color: #6b7280;
+}
+
+
+/* ==========================================
+   LARGE TABLET
+========================================== */
+
+@media (max-width: 1100px) {
+
+  .applicant-actions {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 768px) {
+
+  .dashboard-quick-actions {
+    margin-top: 25px;
+
+    margin-bottom: 25px;
+  }
+
+  .dashboard-quick-actions .section-header {
+    margin-bottom: 18px;
+  }
+
+  .dashboard-quick-actions
+  .section-header h2 {
+    font-size: 19px;
+  }
+
+  .dashboard-quick-actions
+  .section-header p {
+    font-size: 13px;
+  }
+
+  .applicant-actions {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+  }
+
+  .applicant-action-card {
+    padding: 18px;
+
+    gap: 13px;
+  }
+
+  .applicant-action-icon {
+    width: 44px;
+    height: 44px;
+
+    min-width: 44px;
+
+    font-size: 20px;
+  }
+
+  .applicant-action-card h3 {
+    font-size: 15px;
+  }
+
+  .applicant-action-card p {
+    font-size: 13px;
+  }
+
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+  .dashboard-quick-actions {
+    margin-top: 22px;
+
+    margin-bottom: 22px;
+  }
+
+  .dashboard-quick-actions
+  .section-header h2 {
+    font-size: 19px;
+  }
+
+  .dashboard-quick-actions
+  .section-header p {
+    font-size: 13px;
+  }
+
+  .applicant-actions {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+  }
+
+  .applicant-action-card {
+    padding: 17px;
+
+    gap: 12px;
+  }
+
+  .applicant-action-icon {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    font-size: 19px;
+  }
+
+  .applicant-action-card h3 {
+    font-size: 15px;
+  }
+
+  .applicant-action-card p {
+    font-size: 12px;
+  }
+
+}
+/* ==========================================
+   EMPLOYER CONNECTIONS
+========================================== */
+
+.artisan-connections {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.artisan-connection-card {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 18px 0;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  box-sizing: border-box;
+}
+
+.artisan-connection-card:last-child {
+  border-bottom: none;
+}
+
+.connection-avatar {
+  width: 48px;
+  height: 48px;
+
+  min-width: 48px;
+
+  border-radius: 50%;
+
+  background: #f3f1ff;
+
+  color: #6a4df4;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  overflow: hidden;
+}
+
+.connection-avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.connection-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.connection-info h3 {
+  margin: 0 0 4px;
+
+  font-size: 15px;
+
+  color: #111827;
+}
+
+.connection-info p {
+  margin: 0 0 3px;
+
+  font-size: 13px;
+
+  color: #6b7280;
+}
+
+.connection-info small {
+  color: #9ca3af;
+
+  font-size: 12px;
+}
+
+.connection-status {
+  padding: 6px 12px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  text-transform: capitalize;
+}
+
+.connection-status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.connection-status.reviewing {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.connection-status.shortlisted {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.connection-status.hired {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+
+/* ==========================================
+   RESPONSIVE CONNECTIONS
+========================================== */
+
+@media (max-width: 600px) {
+
+  .artisan-connection-card {
+    align-items: flex-start;
+
+    gap: 12px;
+  }
+
+  .connection-avatar {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    font-size: 16px;
+  }
+
+  .connection-info h3 {
+    font-size: 14px;
+  }
+
+  .connection-info p {
+    font-size: 12px;
+  }
+
+  .connection-status {
+    padding: 5px 9px;
+
+    font-size: 11px;
+  }
+
+}
+
+@media (max-width: 450px) {
+
+  .artisan-connection-card {
+    flex-wrap: wrap;
+  }
+
+  .connection-info {
+    flex: 1;
+  }
+
+  .connection-status {
+    margin-left: 54px;
+  }
+
+}
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 400px) {
+
+  .dashboard-quick-actions {
+    margin-top: 18px;
+
+    margin-bottom: 18px;
+  }
+
+  .dashboard-quick-actions
+  .section-header h2 {
+    font-size: 18px;
+  }
+
+  .dashboard-quick-actions
+  .section-header p {
+    font-size: 12px;
+  }
+
+  .applicant-actions {
+    gap: 10px;
+  }
+
+  .applicant-action-card {
+    padding: 14px;
+
+    gap: 10px;
+  }
+
+  .applicant-action-icon {
+    width: 38px;
+    height: 38px;
+
+    min-width: 38px;
+
+    font-size: 17px;
+  }
+
+  .applicant-action-card h3 {
+    font-size: 14px;
+  }
+
+  .applicant-action-card p {
+    font-size: 11px;
+  }
+
+}
+
+
+/* ==========================================
+   PREVENT OVERFLOW
+========================================== */
+
+.dashboard-quick-actions *,
+.dashboard-quick-actions *::before,
+.dashboard-quick-actions *::after {
+  box-sizing: border-box;
+}
+
+.dashboard-quick-actions img {
+  max-width: 100%;
+}
+
+.dashboard-quick-actions button {
+  max-width: 100%;
+}

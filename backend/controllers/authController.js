@@ -7,12 +7,19 @@ const registerUser = async (req, res) => {
   try {
     const {
       name,
+      companyName,
       email,
       password,
       role,
       phone,
       location,
     } = req.body;
+
+    console.log("========== REGISTRATION DEBUG ==========");
+    console.log("ROLE RECEIVED BY BACKEND:", role);
+    console.log("ROLE TYPE:", typeof role);
+    console.log("FULL REQUEST BODY:", req.body);
+    console.log("========================================");
 
     // Check required fields
     if (!name || !email || !password || !role) {
@@ -22,11 +29,17 @@ const registerUser = async (req, res) => {
     }
 
     // Check valid role
-    if (!["applicant", "employer"].includes(role)) {
-      return res.status(400).json({
-        message: "Invalid user role",
-      });
-    }
+    console.log("ROLE RECEIVED BY BACKEND:", role);
+    console.log("ROLE TYPE:", typeof role);
+
+if (!["applicant", "employer", "artisan"].includes(role)) {
+  console.log("INVALID ROLE:", role);
+
+  return res.status(400).json({
+    message: "Invalid user role",
+    receivedRole: role,
+  });
+}
 
     // Check if email already exists
     const existingUser = await User.findOne({
@@ -43,8 +56,9 @@ const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = await User.create({
+   const user = await User.create({
       name,
+      companyName: companyName || "",
       email: email.toLowerCase(),
       password: hashedPassword,
       role,

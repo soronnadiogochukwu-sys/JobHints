@@ -3,6 +3,7 @@ const express = require("express");
 const {
   createJob,
   getJobs,
+  getEmployerJobs,
   getJobById,
   updateJob,
   deleteJob
@@ -16,6 +17,12 @@ const router = express.Router();
 // Get all jobs
 router.get("/", getJobs);
 
+// Get jobs belonging to logged-in employer 
+router.get( "/employer", 
+  authMiddleware, 
+  roleMiddleware("employer"),
+   getEmployerJobs
+   );
 // Get one job by ID
 router.get("/:id", getJobById)
 

@@ -1,4 +1,4 @@
-import { FaBriefcase } from "react-icons/fa";
+import { FaBriefcase, FaBars, FaXmark } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import FeedbackModal from "./FeedbackModal";
@@ -14,7 +14,17 @@ function Navbar({
   onLogout,
 }) {
   const [feedback, setFeedback] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const navigate = useNavigate();
+
+  // ==========================================
+  // CLOSE MOBILE MENU
+  // ==========================================
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
 
   // ==========================================
   // EMPLOYER ACCESS
@@ -23,6 +33,7 @@ function Navbar({
   const handleEmployerClick = (e) => {
     if (!currentUser) {
       e.preventDefault();
+      closeMenu();
 
       setFeedback({
         variant: "info",
@@ -46,6 +57,7 @@ function Navbar({
 
     if (currentUser.role !== "employer") {
       e.preventDefault();
+      closeMenu();
 
       setFeedback({
         variant: "error",
@@ -56,6 +68,8 @@ function Navbar({
 
       return;
     }
+
+    closeMenu();
   };
 
   // ==========================================
@@ -75,7 +89,10 @@ function Navbar({
 
         <div
           className="logo"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => {
+            navigate("/dashboard");
+            closeMenu();
+          }}
           style={{ cursor: "pointer" }}
         >
           <FaBriefcase className="icon" />
@@ -83,10 +100,9 @@ function Navbar({
           <h3>{title}</h3>
         </div>
 
-
         {/* DASHBOARD NAVIGATION */}
 
-        <ul className="nav-links">
+        <ul className={`nav-links ${menuOpen ? "menu-open" : ""}`}>
 
           <li>
             <NavLink
@@ -94,6 +110,7 @@ function Navbar({
               className={({ isActive }) =>
                 isActive ? "active" : ""
               }
+              onClick={closeMenu}
             >
               Dashboard
             </NavLink>
@@ -101,28 +118,42 @@ function Navbar({
 
         </ul>
 
-
         {/* USER AREA */}
 
-        <div className="navbar-buttons">
-
+        <div
+          className={`navbar-buttons ${
+            menuOpen ? "menu-open" : ""
+          }`}
+        >
           <span className="navbar-greeting">
             Hi, {firstName}
           </span>
 
           <button
-            onClick={onLogout}
+            onClick={() => {
+              closeMenu();
+              onLogout();
+            }}
             className="signup-btn"
           >
             Logout
           </button>
-
         </div>
+
+        {/* HAMBURGER */}
+
+        <button
+          className="menu-toggle"
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-label="Toggle navigation menu"
+          aria-expanded={menuOpen}
+        >
+          {menuOpen ? <FaXmark /> : <FaBars />}
+        </button>
 
       </nav>
     );
   }
-
 
   // ==========================================
   // PUBLIC NAVBAR
@@ -141,10 +172,13 @@ function Navbar({
 
       </div>
 
-
       {/* PUBLIC LINKS */}
 
-      <ul className="nav-links">
+      <ul
+        className={`nav-links ${
+          menuOpen ? "menu-open" : ""
+        }`}
+      >
 
         {links?.map((link) => (
 
@@ -169,6 +203,7 @@ function Navbar({
                 className={({ isActive }) =>
                   isActive ? "active" : ""
                 }
+                onClick={closeMenu}
               >
                 {link.name}
               </NavLink>
@@ -181,20 +216,29 @@ function Navbar({
 
       </ul>
 
-
       {/* LOGIN / SIGNUP */}
 
-      <div className="navbar-buttons">
+      <div
+        className={`navbar-buttons ${
+          menuOpen ? "menu-open" : ""
+        }`}
+      >
 
         <button
-          onClick={openLogin}
+          onClick={() => {
+            closeMenu();
+            openLogin();
+          }}
           className="login-btn"
         >
           {buttons?.login?.text || "Login"}
         </button>
 
         <button
-          onClick={openSignup}
+          onClick={() => {
+            closeMenu();
+            openSignup();
+          }}
           className="signup-btn"
         >
           {buttons?.signup?.text || "Sign up"}
@@ -202,6 +246,16 @@ function Navbar({
 
       </div>
 
+      {/* HAMBURGER BUTTON */}
+
+      <button
+        className="menu-toggle"
+        onClick={() => setMenuOpen((prev) => !prev)}
+        aria-label="Toggle navigation menu"
+        aria-expanded={menuOpen}
+      >
+        {menuOpen ? <FaXmark /> : <FaBars />}
+      </button>
 
       {/* FEEDBACK */}
 

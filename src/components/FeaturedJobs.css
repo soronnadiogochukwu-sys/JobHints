@@ -1,16 +1,195 @@
-.featured{
-padding:10px 2%;
-margin-bottom: 5px;
+/* ==========================================
+   FEATURED JOBS SECTION
+========================================== */
+
+.featured {
+  width: 100%;
+  padding: 70px 6%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-.job-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:25px;
+/* ==========================================
+   HEADER
+========================================== */
 
+.heading {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 35px;
 }
-.featured .heading{
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 7px;
+
+.heading h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.view-all-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: #6a4df4;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 0;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.view-all-btn:hover {
+  opacity: 0.8;
+}
+
+.view-all-btn svg {
+  font-size: 13px;
+}
+
+/* ==========================================
+   JOB GRID
+========================================== */
+
+.job-grid {
+  width: 100%;
+  display: grid;
+
+  /* Desktop */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+.job-grid > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* ==========================================
+   LOADING / ERROR / EMPTY
+========================================== */
+
+.featured-jobs-message {
+  width: 100%;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 14px;
+}
+
+.featured-jobs-message h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #111827;
+}
+
+.featured-jobs-message p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   TABLET
+   2 CARDS PER ROW
+========================================== */
+
+@media (max-width: 1024px) {
+  .featured {
+    padding: 60px 5%;
+  }
+
+  .heading h2 {
+    font-size: 28px;
+  }
+
+  .job-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+/* ==========================================
+   MOBILE
+   2 CARDS PER ROW
+========================================== */
+
+@media (max-width: 768px) {
+  .featured {
+    padding: 50px 20px;
+  }
+
+  .heading {
+    margin-bottom: 28px;
+  }
+
+  .heading h2 {
+    font-size: 25px;
+  }
+
+  .job-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/* ==========================================
+   SMALL MOBILE
+   STILL 2 CARDS PER ROW
+========================================== */
+
+@media (max-width: 480px) {
+  .featured {
+    padding: 40px 12px;
+  }
+
+  .heading {
+    align-items: flex-start;
+  }
+
+  .heading h2 {
+    font-size: 21px;
+    line-height: 1.3;
+  }
+
+  .view-all-btn {
+    font-size: 13px;
+  }
+
+  .job-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+/* ==========================================
+   VERY SMALL PHONES
+========================================== */
+
+@media (max-width: 360px) {
+  .featured {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .job-grid {
+    gap: 10px;
+  }
+
+  .heading h2 {
+    font-size: 19px;
+  }
 }

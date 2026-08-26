@@ -1,47 +1,135 @@
+/* ==========================================
+   MAIN DASHBOARD LAYOUT
+========================================== */
+
 .dashboard-layout {
   display: flex;
+  width: 100%;
   min-height: 100vh;
   background: #f8f9fc;
+  overflow-x: hidden;
+  position: relative;
 }
+
+/* ==========================================
+   SIDEBAR
+========================================== */
 
 .dashboard-sidebar {
   width: 250px;
-  min-height: 100vh;
+  min-width: 250px;
+  height: 100vh;
+
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
+
   display: flex;
   flex-direction: column;
+
   padding: 25px 15px;
+
   position: fixed;
   left: 0;
   top: 0;
-  bottom: 0;
+
+  box-sizing: border-box;
+
+  z-index: 1000;
+
+  transition: transform 0.3s ease;
 }
+
+/* ==========================================
+   SIDEBAR HEADER
+========================================== */
+
+.dashboard-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 35px;
+}
+
+/* ==========================================
+   LOGO
+========================================== */
 
 .dashboard-logo {
   display: flex;
   align-items: center;
   gap: 10px;
+
+  padding: 0 10px;
+
   font-size: 22px;
   font-weight: 700;
+
   color: #6a4df4;
-  padding: 0 10px;
-  margin-bottom: 35px;
+
+  white-space: nowrap;
 }
+
+.dashboard-logo svg {
+  font-size: 21px;
+}
+
+/* ==========================================
+   CLOSE BUTTON
+   HIDDEN ON DESKTOP
+========================================== */
+
+.dashboard-close-btn {
+  display: none;
+
+  border: none;
+  background: transparent;
+
+  color: #111827;
+
+  font-size: 24px;
+
+  cursor: pointer;
+
+  padding: 5px;
+
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================
+   NAVIGATION
+========================================== */
 
 .dashboard-nav {
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  width: 100%;
 }
 
 .dashboard-link {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  box-sizing: border-box;
+
   text-decoration: none;
+
   color: #4b5563;
+
   padding: 12px 15px;
+
   border-radius: 10px;
+
   font-size: 15px;
-  transition: 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .dashboard-link:hover {
@@ -51,58 +139,357 @@
 
 .dashboard-link.active {
   background: #6a4df4;
-  color: white;
+  color: #ffffff;
 }
 
+/* ==========================================
+   LOGOUT
+========================================== */
+
 .dashboard-logout {
+  width: 100%;
+
   margin-top: auto;
+
   border: none;
+
   background: #fee2e2;
   color: #dc2626;
+
   padding: 12px 15px;
+
   border-radius: 10px;
+
   cursor: pointer;
+
   font-size: 15px;
+
+  transition: 0.2s ease;
 }
+
+.dashboard-logout:hover {
+  background: #fecaca;
+}
+
+/* ==========================================
+   MAIN CONTENT
+========================================== */
 
 .dashboard-content {
   margin-left: 250px;
+
   width: calc(100% - 250px);
+
   min-height: 100vh;
+
+  box-sizing: border-box;
+
+  overflow-x: hidden;
 }
 
+/* ==========================================
+   TOPBAR
+========================================== */
+
 .dashboard-topbar {
+  width: 100%;
   height: 80px;
+
   background: #ffffff;
+
   border-bottom: 1px solid #e5e7eb;
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
+
   padding: 0 30px;
+
+  box-sizing: border-box;
+
+  position: sticky;
+  top: 0;
+
+  z-index: 900;
+}
+
+/* ==========================================
+   USER INFO
+========================================== */
+
+.dashboard-user-info {
+  flex: 1;
 }
 
 .dashboard-topbar h2 {
   margin: 0;
+
   color: #111827;
+
+  font-size: 20px;
 }
 
 .dashboard-topbar p {
   margin: 5px 0 0;
+
   color: #6b7280;
+
+  font-size: 14px;
 }
+
+/* ==========================================
+   AVATAR
+========================================== */
 
 .dashboard-avatar {
   width: 42px;
   height: 42px;
+
+  min-width: 42px;
+
   border-radius: 50%;
+
   background: #6a4df4;
-  color: white;
+
+  color: #ffffff;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-weight: 700;
 }
 
+/* ==========================================
+   HAMBURGER
+   HIDDEN ON DESKTOP
+========================================== */
+
+.dashboard-menu-btn {
+  display: none;
+
+  border: none;
+  background: transparent;
+
+  color: #111827;
+
+  font-size: 25px;
+
+  cursor: pointer;
+
+  padding: 5px;
+
+  margin-right: 12px;
+
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================
+   PAGE CONTENT
+========================================== */
+
 .dashboard-page-content {
+  width: 100%;
+
   padding: 30px;
+
+  box-sizing: border-box;
+
+  overflow-x: hidden;
+}
+
+/* ==========================================
+   OVERLAY
+   HIDDEN ON DESKTOP
+========================================== */
+
+.dashboard-overlay {
+  display: none;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1024px) {
+
+  /* SIDEBAR */
+
+  .dashboard-sidebar {
+    width: 270px;
+    min-width: 270px;
+
+    transform: translateX(-100%);
+
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.12);
+  }
+
+  /* OPEN SIDEBAR */
+
+  .dashboard-sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* CLOSE BUTTON */
+
+  .dashboard-close-btn {
+    display: flex;
+  }
+
+  /* OVERLAY */
+
+  .dashboard-overlay {
+    display: block;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.35);
+
+    z-index: 999;
+  }
+
+  /* MAIN CONTENT */
+
+  .dashboard-content {
+    margin-left: 0;
+
+    width: 100%;
+  }
+
+  /* HAMBURGER */
+
+  .dashboard-menu-btn {
+    display: flex;
+  }
+
+  /* TOPBAR */
+
+  .dashboard-topbar {
+    padding: 0 20px;
+  }
+
+  /* PAGE */
+
+  .dashboard-page-content {
+    padding: 25px 20px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  /* TOPBAR */
+
+  .dashboard-topbar {
+    height: 70px;
+
+    padding: 0 15px;
+  }
+
+  .dashboard-menu-btn {
+    font-size: 23px;
+
+    margin-right: 8px;
+  }
+
+  .dashboard-topbar h2 {
+    font-size: 18px;
+  }
+
+  .dashboard-topbar p {
+    display: none;
+  }
+
+  /* AVATAR */
+
+  .dashboard-avatar {
+    width: 38px;
+    height: 38px;
+
+    min-width: 38px;
+  }
+
+  /* SIDEBAR */
+
+  .dashboard-sidebar {
+    width: 280px;
+    min-width: 280px;
+
+    max-width: 85vw;
+  }
+
+  /* PAGE */
+
+  .dashboard-page-content {
+    padding: 20px 15px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+  .dashboard-topbar {
+    height: 65px;
+
+    padding: 0 12px;
+  }
+
+  .dashboard-menu-btn {
+    font-size: 21px;
+
+    margin-right: 6px;
+  }
+
+  .dashboard-topbar h2 {
+    font-size: 16px;
+  }
+
+  .dashboard-avatar {
+    width: 36px;
+    height: 36px;
+
+    min-width: 36px;
+
+    font-size: 14px;
+  }
+
+  .dashboard-sidebar {
+    width: 260px;
+    min-width: 260px;
+
+    max-width: 85vw;
+
+    padding: 20px 12px;
+  }
+
+  .dashboard-logo {
+    font-size: 20px;
+  }
+
+  .dashboard-page-content {
+    padding: 15px 10px;
+  }
+
+  .dashboard-link {
+    padding: 11px 13px;
+
+    font-size: 14px;
+  }
+
+  .dashboard-logout {
+    padding: 11px 13px;
+
+    font-size: 14px;
+  }
 }
