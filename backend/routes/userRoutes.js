@@ -10,25 +10,21 @@ const upload = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
 
-// ==========================================
-// GET PROFILE
-// ==========================================
-
 router.get(
   "/profile",
   authMiddleware,
   getProfile
 );
 
-// ==========================================
-// UPDATE PROFILE
-// Employer uploads COMPANY LOGO only
-// ==========================================
-
 router.put(
   "/profile",
   authMiddleware,
-  upload.single("profileImage"),
+  upload.fields([
+    {
+      name: "profileImage",
+      maxCount: 1,
+    },
+  ]),
   updateProfile
 );
 
