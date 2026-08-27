@@ -67,10 +67,6 @@ function EmployerProfile({ currentUser }) {
     if (logoFile) {
       formData.append("profileImage", logoFile);
     }
-      const response = await API.put(
-        "/users/profile",
-        formData
-      );
     console.log("========== SENDING PROFILE ==========");
     
     for (const [key, value] of formData.entries()) {
