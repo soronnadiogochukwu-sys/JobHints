@@ -5,7 +5,6 @@ import Modal from "../components/Modal";
 import FeedbackModal from "../components/FeedbackModal";
 import "./JobDetails.css";
 
-
 // ======================================================
 // APPLY FORM
 // ======================================================
@@ -25,86 +24,110 @@ function ApplyForm({
   const [note, setNote] = useState("");
   const [file, setFile] = useState(null);
 
-
   // Prefill applicant information
   useEffect(() => {
-  if (currentUser) {
-    setName(
-      currentUser.fullName ||
-      currentUser.name ||
-      ""
-    );
+    if (currentUser) {
+      setName(
+        currentUser.fullName ||
+        currentUser.name ||
+        ""
+      );
 
-    setEmail(
-      currentUser.email || ""
-    );
-  }
-}, [currentUser]);
+      setEmail(
+        currentUser.email || ""
+      );
+    }
+  }, [currentUser]);
 
+  // ======================================================
+  // SUBMIT APPLICATION
+  // ======================================================
 
-  // Submit application
   const submit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    if (!token) {
-      setFeedback({
-        variant: "error",
-        title: "Login required",
-        message: "Please log in before applying for this job.",
-      });
+      if (!token) {
+        setFeedback({
+          variant: "error",
+          title: "Login required",
+          message:
+            "Please log in before applying for this job.",
+        });
 
-      return;
-    }
-
-    if (!file) {
-      setFeedback({
-        variant: "error",
-        title: "CV required",
-        message: "Please upload your CV before submitting.",
-      });
-
-      return;
-    }
-
-    const response = await API.post(
-      `/applications/${job._id}`,
-      {
-        coverLetter: note,
-        resumeUrl: file.name,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        return;
       }
-    );
 
-    console.log("Application response:", response.data);
+      if (!file) {
+        setFeedback({
+          variant: "error",
+          title: "CV required",
+          message:
+            "Please upload your CV before submitting.",
+        });
 
-    setApplicationSent(true);
+        return;
+      }
 
-    setFeedback({
-      variant: "success",
-      title: "Application submitted",
-      message: "Your application has been submitted successfully.",
-    });
+      // ==========================================
+      // SUBMIT APPLICATION
+      // ==========================================
+      //
+      // IMPORTANT:
+      // We do NOT send file.name as resumeUrl.
+      //
+      // The backend will use the applicant's
+      // resumeUrl already saved in MongoDB.
+      //
+      const response = await API.post(
+        `/applications/${job._id}`,
+        {
+          coverLetter: note,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-  } catch (error) {
-    console.error("Application error:", error);
-    console.error("Server response:", error.response?.data);
+      console.log(
+        "Application response:",
+        response.data
+      );
 
-    setFeedback({
-      variant: "error",
-      title: "Application failed",
-      message:
-        error.response?.data?.message ||
-        "Something went wrong while submitting your application.",
-    });
-  }
-};
+      setApplicationSent(true);
+
+      setFeedback({
+        variant: "success",
+        title: "Application submitted",
+        message:
+          "Your application has been submitted successfully.",
+      });
+
+    } catch (error) {
+      console.error(
+        "Application error:",
+        error
+      );
+
+      console.error(
+        "Server response:",
+        error.response?.data
+      );
+
+      setFeedback({
+        variant: "error",
+        title: "Application failed",
+        message:
+          error.response?.data?.message ||
+          "Something went wrong while submitting your application.",
+      });
+    }
+  };
+
   // ======================================================
   // USER NOT LOGGED IN
   // ======================================================
@@ -113,7 +136,9 @@ function ApplyForm({
     return (
       <div className="apply-form">
 
-        <h2>I have an account</h2>
+        <h2>
+          I have an account
+        </h2>
 
         <p>
           Sign in to apply for this job.
@@ -157,7 +182,6 @@ function ApplyForm({
     );
   }
 
-
   // ======================================================
   // LOGGED-IN USER APPLICATION FORM
   // ======================================================
@@ -183,7 +207,6 @@ function ApplyForm({
           required
         />
 
-
         {/* EMAIL */}
 
         <input
@@ -196,7 +219,6 @@ function ApplyForm({
           required
         />
 
-
         {/* NOTE */}
 
         <textarea
@@ -206,7 +228,6 @@ function ApplyForm({
             setNote(e.target.value)
           }
         />
-
 
         {/* CV */}
 
@@ -225,7 +246,6 @@ function ApplyForm({
             required
           />
         </label>
-
 
         {/* FORM BUTTONS */}
 
@@ -249,7 +269,6 @@ function ApplyForm({
 
       </form>
 
-
       {/* FEEDBACK MODAL */}
 
       {feedback && (
@@ -271,10 +290,9 @@ function ApplyForm({
   );
 }
 
-
-
-
+// ======================================================
 // JOB DETAILS
+// ======================================================
 
 function JobDetails({
   onClose,
@@ -285,6 +303,7 @@ function JobDetails({
 
   // Get MongoDB job ID from URL
   const { id } = useParams();
+
   const navigate = useNavigate();
 
   // JOB DETAILS STATES
@@ -295,8 +314,9 @@ function JobDetails({
 
   const [showApply, setShowApply] = useState(false);
 
-
-  // FETCH JOB FROM API
+  // ======================================================
+  // FETCH JOB FROM DEPLOYED API
+  // ======================================================
 
   useEffect(() => {
 
@@ -311,39 +331,31 @@ function JobDetails({
           id
         );
 
+        // ==========================================
+        // USE API.JS / RENDER API
+        // ==========================================
 
-        const response = await fetch(
-          `http://localhost:5000/api/jobs/${id}`
+        const response = await API.get(
+          `/jobs/${id}`
         );
-
 
         console.log(
-          "API response status:",
-          response.status
+          "API response:",
+          response.data
         );
 
-
-        if (!response.ok) {
-          throw new Error(
-            "Job not found"
-          );
-        }
-
-
-        const data = await response.json();
-
-        console.log(
-          "Job received from MongoDB:",
-          data
-        );
-
-        setJob(data.job);
+        setJob(response.data.job);
 
       } catch (error) {
 
         console.error(
           "Error fetching job:",
           error
+        );
+
+        console.error(
+          "Server response:",
+          error.response?.data
         );
 
         setJob(null);
@@ -356,16 +368,15 @@ function JobDetails({
 
     };
 
-
     if (id) {
       fetchJob();
     }
 
   }, [id]);
 
-
-
+  // ======================================================
   // LOADING
+  // ======================================================
 
   if (loading) {
 
@@ -381,9 +392,9 @@ function JobDetails({
 
   }
 
-
-
+  // ======================================================
   // JOB NOT FOUND
+  // ======================================================
 
   if (!job) {
 
@@ -399,18 +410,28 @@ function JobDetails({
           looking for.
         </p>
 
+        <button
+          type="button"
+          className="back-dashboard-btn"
+          onClick={() =>
+            navigate("/dashboard")
+          }
+        >
+          ← Back to Dashboard
+        </button>
+
       </div>
     );
 
   }
 
-
+  // ======================================================
   // JOB DETAILS PAGE
+  // ======================================================
 
   return (
 
     <div className="details">
-
 
       {/* CLOSE BUTTON */}
 
@@ -426,15 +447,11 @@ function JobDetails({
 
       )}
 
-
-
-      {/*JOB HEADER*/}
+      {/* JOB HEADER */}
 
       <div className="job-header">
 
-
         <div className="job-intro">
-
 
           {/* COMPANY LOGO */}
 
@@ -453,15 +470,11 @@ function JobDetails({
 
           )}
 
-
-
           {/* JOB TITLE */}
 
           <h1>
             {job.title}
           </h1>
-
-
 
           {/* COMPANY */}
 
@@ -469,46 +482,34 @@ function JobDetails({
             {job.company}
           </p>
 
-
-
           {/* JOB TAGS */}
 
           <div className="job-tags">
 
-
             {job.location && (
-
               <span>
                 {job.location}
               </span>
-
             )}
 
-
             {job.type && (
-
               <span>
                 {job.type}
               </span>
-
             )}
 
-
             {job.status && (
-
               <span>
                 {job.status}
               </span>
-
             )}
 
           </div>
 
         </div>
 
+        {/* SALARY */}
 
-         {/* SALARY */}
-            
         <div className="job-summary-card">
 
           <p>
@@ -524,9 +525,7 @@ function JobDetails({
 
       </div>
 
-
-
-      {/*JOB OVERVIEW */}
+      {/* JOB OVERVIEW */}
 
       <section className="job-section">
 
@@ -541,9 +540,7 @@ function JobDetails({
 
       </section>
 
-
-
-      {/* REQUIRED SKILLS*/}
+      {/* REQUIRED SKILLS */}
 
       {job.skills &&
         job.skills.length > 0 && (
@@ -574,9 +571,7 @@ function JobDetails({
 
         )}
 
-
-
-      {/*APPLICATION DEADLINE*/}
+      {/* APPLICATION DEADLINE */}
 
       {job.deadline && (
 
@@ -596,31 +591,33 @@ function JobDetails({
 
       )}
 
+      {/* DASHBOARD NAVIGATION */}
 
+      <div className="job-details-actions">
 
-      {/*DASHBOARD NAVIGATION */}
+        <button
+          type="button"
+          className="back-dashboard-btn"
+          onClick={() =>
+            navigate("/dashboard")
+          }
+        >
+          ← Back to Dashboard
+        </button>
 
-<div className="job-details-actions">
+        <button
+          type="button"
+          className="primary-btn"
+          onClick={() =>
+            setShowApply(true)
+          }
+        >
+          Apply Now
+        </button>
 
-  <button
-    type="button"
-    className="back-dashboard-btn"
-    onClick={() => navigate("/dashboard")}
-  >
-    ← Back to Dashboard
-  </button>
+      </div>
 
-  <button
-    type="button"
-    className="primary-btn"
-    onClick={() => setShowApply(true)}
-  >
-    Apply Now
-  </button>
-
-</div>
-
-{/* APPLY MODAL */}
+      {/* APPLY MODAL */}
 
       {showApply && (
 
@@ -649,7 +646,5 @@ function JobDetails({
 
   );
 }
-
-
 
 export default JobDetails;
