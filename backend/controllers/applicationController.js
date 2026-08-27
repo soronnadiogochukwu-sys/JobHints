@@ -35,9 +35,6 @@ const applyForJob = async (req, res) => {
     // ==========================================
     // GET LOGGED-IN APPLICANT
     // ==========================================
-    const applicant = await require("../models/User").findById(
-      req.user.id
-    );
 
     if (!applicant) {
       return res.status(404).json({
