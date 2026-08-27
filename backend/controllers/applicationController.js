@@ -9,24 +9,12 @@ const applyForJob = async (req, res) => {
   try {
     const { coverLetter } = req.body;
     const jobId = req.params.jobId;
-
-    // Get the logged-in applicant
+    
     const applicant = await User.findById(req.user.id);
 
-    if (!applicant) {
-      return res.status(404).json({
-        message: "Applicant not found"
-      });
-    }
-
-    // Make sure applicant has a CV
-    if (!applicant.resumeUrl) {
-      return res.status(400).json({
-        message: "Please upload your CV to your profile before applying for a job"
-      });
-    }
-
-    // Check if the job exists
+    // ==========================================
+    // CHECK IF JOB EXISTS
+    // ==========================================
     const job = await Job.findById(jobId);
 
     if (!job) {
@@ -35,14 +23,31 @@ const applyForJob = async (req, res) => {
       });
     }
 
-    // Make sure the job is still open
+    // ==========================================
+    // MAKE SURE JOB IS STILL OPEN
+    // ==========================================
     if (job.status !== "open") {
       return res.status(400).json({
         message: "This job is no longer accepting applications"
       });
     }
 
-    // Check if applicant has already applied
+    // ==========================================
+    // GET LOGGED-IN APPLICANT
+    // ==========================================
+    const applicant = await require("../models/User").findById(
+      req.user.id
+    );
+
+    if (!applicant) {
+      return res.status(404).json({
+        message: "Applicant not found"
+      });
+    }
+
+    // ==========================================
+    // CHECK IF APPLICANT ALREADY APPLIED
+    // ==========================================
     const existingApplication = await Application.findOne({
       job: jobId,
       applicant: req.user.id
@@ -54,14 +59,19 @@ const applyForJob = async (req, res) => {
       });
     }
 
-    // Create application using applicant's saved CV
+    // ==========================================
+    // CREATE APPLICATION
+    // ==========================================
     const application = await Application.create({
       job: jobId,
       applicant: req.user.id,
       coverLetter: coverLetter || "",
-      resumeUrl: applicant.resumeUrl
+      resumeUrl: applicant.resumeUrl || ""
     });
 
+    // ==========================================
+    // RESPONSE
+    // ==========================================
     res.status(201).json({
       message: "Application submitted successfully",
       application
@@ -72,6 +82,73 @@ const applyForJob = async (req, res) => {
 
     res.status(500).json({
       message: "Failed to submit application",
+      error: error.message
+    });
+  }
+};
+
+// ==========================================
+// GET MY APPLICATIONS
+// ==========================================
+const getMyApplications = async (req, res) => {
+  try {
+    const applications = await Application.find({
+      applicant: req.user.id
+    })
+      .populate(
+        "job",
+        "title company location category salary type status"
+      )
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      count: applications.length,
+      applications
+    });
+
+  } catch (error) {
+    console.error("GET MY APPLICATIONS ERROR:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch applications",
+      error: error.message
+    });
+  }
+};
+// ==========================================
+// GET APPLICATIONS FOR EMPLOYER'S JOBS
+// ==========================================
+const getEmployerApplications = async (req, res) => {
+  try {
+    // Find all jobs created by this employer
+    const jobs = await Job.find({
+      employer: req.user.id
+    }).select("_id");
+
+    const jobIds = jobs.map((job) => job._id);
+
+    // Find applications submitted for those jobs
+    const applications = await Application.find({
+      job: { $in: jobIds }
+    })
+      .populate(
+        "job",
+        "title company location category salary type status"
+      )
+      .populate(
+        "applicant",
+        "name email phone location profileImage bio skills resumeUrl"
+      )
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      count: applications.length,
+      applications
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch employer applications",
       error: error.message
     });
   }
