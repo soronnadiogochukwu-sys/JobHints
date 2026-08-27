@@ -51,112 +51,102 @@ function EmployerProfile({ currentUser }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const formData = new FormData();
+    const token = localStorage.getItem("token");
 
-      formData.append("companyName", companyName);
-      formData.append("phone", phone);
-      formData.append("location", location);
+    const formData = new FormData();
 
-      if (logoFile) {
-        formData.append("profileImage", logoFile);
-      }
+    formData.append("companyName", companyName);
+    formData.append("phone", phone);
+    formData.append("location", location);
 
-      // ==========================================
-      // CHECK EXACTLY WHAT IS BEING SENT
-      // ==========================================
-
-      console.log("========== PROFILE UPDATE ==========");
-      console.log("Company Name:", companyName);
-      console.log("Phone:", phone);
-      console.log("Location:", location);
-      console.log("Logo File:", logoFile);
-
-      for (const [key, value] of formData.entries()) {
-        console.log("FORM DATA:", key, value);
-      }
-
-      console.log("====================================");
-
-      // ==========================================
-      // SEND TO BACKEND
-      // ==========================================
-
+    if (logoFile) {
+      formData.append("profileImage", logoFile);
+    }
       const response = await API.put(
         "/users/profile",
         formData
       );
-
+    console.log("========== SENDING PROFILE ==========");
+    
+    for (const [key, value] of formData.entries()) {
       console.log(
-        "PROFILE UPDATE RESPONSE:",
-        response.data
+        key,
+        value instanceof File
+          ? `FILE: ${value.name} (${value.type})`
+          : value
       );
-
-      // ==========================================
-      // UPDATE CURRENT USER
-      // ==========================================
-
-      const updatedUser = {
-        ...currentUser,
-        ...response.data.user,
-        companyName: response.data.user.companyName,
-        phone: response.data.user.phone,
-        location: response.data.user.location,
-        profileImage:
-          response.data.user.profileImage || "",
-        website,
-        description,
-      };
-
-      // ==========================================
-      // UPDATE LOGO PREVIEW
-      // ==========================================
-
-      setProfileImage(
-        response.data.user.profileImage || ""
-      );
-
-      // ==========================================
-      // SAVE UPDATED USER LOCALLY
-      // ==========================================
-
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify(updatedUser)
-      );
-
-      // Clear selected file
-      setLogoFile(null);
-
-      alert("Company profile updated successfully.");
-
-    } catch (error) {
-      console.error(
-        "========== PROFILE UPDATE ERROR =========="
-      );
-
-      console.error("ERROR:", error);
-      console.error("STATUS:", error.response?.status);
-      console.error("DATA:", error.response?.data);
-
-      console.error(
-        "=========================================="
-      );
-
-      alert(
-        error.response?.data?.message ||
-        "Profile update failed."
-      );
-
-    } finally {
-      setLoading(false);
     }
-  };
 
+    console.log("=====================================");
+
+    const response = await API.put(
+      "/users/profile",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    console.log(
+      "PROFILE UPDATE RESPONSE:",
+      response.data
+    );
+
+    const updatedUser = {
+      ...currentUser,
+      ...response.data.user,
+      companyName: response.data.user.companyName,
+      phone: response.data.user.phone,
+      location: response.data.user.location,
+      profileImage: response.data.user.profileImage || "",
+      website,
+      description,
+    };
+
+    setProfileImage(
+      response.data.user.profileImage || ""
+    );
+
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify(updatedUser)
+    );
+
+    setLogoFile(null);
+
+    alert("Company profile updated successfully.");
+
+  } catch (error) {
+
+    console.error(
+      "========== PROFILE UPDATE ERROR =========="
+    );
+
+    console.error("ERROR:", error);
+    console.error("STATUS:", error.response?.status);
+    console.error("DATA:", error.response?.data);
+
+    console.error(
+      "=========================================="
+    );
+
+    alert(
+      error.response?.data?.message ||
+      "Profile update failed."
+    );
+
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="employer-profile-page">
 
