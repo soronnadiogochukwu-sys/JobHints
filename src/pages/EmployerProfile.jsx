@@ -80,10 +80,10 @@ function EmployerProfile({ currentUser }) {
 
     console.log("=====================================");
 
-    const response = await API.put(
-      "/users/profile",
-      formData,
-      {
+        const response = await API.put(
+          "/users/profile",
+          formData,
+          {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
