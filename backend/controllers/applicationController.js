@@ -5,16 +5,43 @@ const User = require("../models/User");
 // ==========================================
 // APPLY FOR A JOB
 // ==========================================
+// ==========================================
+// APPLY FOR A JOB
+// ==========================================
 const applyForJob = async (req, res) => {
   try {
     const { coverLetter } = req.body;
     const jobId = req.params.jobId;
-    
-    const applicant = await User.findById(req.user.id);
+
+    // ==========================================
+    // GET LOGGED-IN USER
+    // ==========================================
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    // ==========================================
+    // ONLY GRADUATES AND ARTISANS CAN APPLY
+    // ==========================================
+
+    if (
+      user.role !== "graduate" &&
+      user.role !== "artisan"
+    ) {
+      return res.status(403).json({
+        message: "Only graduates and artisans can apply for jobs."
+      });
+    }
 
     // ==========================================
     // CHECK IF JOB EXISTS
     // ==========================================
+
     const job = await Job.findById(jobId);
 
     if (!job) {
@@ -24,8 +51,9 @@ const applyForJob = async (req, res) => {
     }
 
     // ==========================================
-    // MAKE SURE JOB IS STILL OPEN
+    // CHECK IF JOB IS OPEN
     // ==========================================
+
     if (job.status !== "open") {
       return res.status(400).json({
         message: "This job is no longer accepting applications"
@@ -33,22 +61,34 @@ const applyForJob = async (req, res) => {
     }
 
     // ==========================================
-    // GET LOGGED-IN APPLICANT
+    // CHECK JOB TARGET ROLE
     // ==========================================
 
-    if (!applicant) {
-      return res.status(404).json({
-        message: "Applicant not found"
+    if (!job.targetRole) {
+      return res.status(400).json({
+        message: "This job does not have a target role specified"
       });
     }
 
     // ==========================================
-    // CHECK IF APPLICANT ALREADY APPLIED
+    // USER ROLE MUST MATCH JOB TARGET ROLE
     // ==========================================
-    const existingApplication = await Application.findOne({
-      job: jobId,
-      applicant: req.user.id
-    });
+
+    if (user.role !== job.targetRole) {
+      return res.status(403).json({
+        message: `This job is only available to ${job.targetRole}s.`
+      });
+    }
+
+    // ==========================================
+    // CHECK IF USER ALREADY APPLIED
+    // ==========================================
+
+    const existingApplication =
+      await Application.findOne({
+        job: jobId,
+        applicant: req.user.id
+      });
 
     if (existingApplication) {
       return res.status(400).json({
@@ -59,31 +99,38 @@ const applyForJob = async (req, res) => {
     // ==========================================
     // CREATE APPLICATION
     // ==========================================
+
     const application = await Application.create({
       job: jobId,
       applicant: req.user.id,
       coverLetter: coverLetter || "",
-      resumeUrl: applicant.resumeUrl || ""
+      resumeUrl: user.resumeUrl || ""
     });
 
     // ==========================================
-    // RESPONSE
+    // SUCCESS
     // ==========================================
+
     res.status(201).json({
       message: "Application submitted successfully",
       application
     });
 
   } catch (error) {
-    console.error("APPLY FOR JOB ERROR:", error);
+  console.log("========== APPLICATION ERROR ==========");
+  console.log("STATUS:", error.response?.status);
+  console.log("DATA:", JSON.stringify(error.response?.data, null, 2));
+  console.log("MESSAGE:", error.response?.data?.message);
+  console.log("=======================================");
 
-    res.status(500).json({
-      message: "Failed to submit application",
-      error: error.message
-    });
-  }
+  setFeedback({
+    type: "error",
+    message:
+      error.response?.data?.message ||
+      "Failed to submit application",
+  });
+}
 };
-
 // ==========================================
 // GET MY APPLICATIONS
 // ==========================================

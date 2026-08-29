@@ -1,33 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FaBell,
-  FaBriefcase,
-  FaCheckCircle,
-  FaStar,
-  FaSearch,
-  FaUser,
-  FaUsers
-} from "react-icons/fa";
-
 import API from "../services/api";
-import "./ArtisanDashboard.css";
+import "./ApplicantDashboard.css";
 
 function ArtisanDashboard({ currentUser }) {
-  const navigate = useNavigate();
-
-  const [stats, setStats] = useState({
-    jobRequests: 0,
-    activeJobs: 0,
-    completedJobs: 0,
-    rating: 0,
-    connections: []
-  });
-
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
+  // ==========================================
+  // FETCH ARTISAN APPLICATIONS
+  // ==========================================
+
   useEffect(() => {
-    const fetchDashboardStats = async () => {
+    const fetchApplications = async () => {
       try {
         const token = localStorage.getItem("token");
 
@@ -37,30 +24,20 @@ function ArtisanDashboard({ currentUser }) {
         }
 
         const response = await API.get(
-          "/applications/artisan/dashboard-stats",
+          "/applications/my-applications",
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
-        console.log(
-          "ARTISAN DASHBOARD:",
-          response.data
+        setApplications(
+          response.data.applications || []
         );
-
-        setStats({
-          jobRequests: response.data.jobRequests || 0,
-          activeJobs: response.data.activeJobs || 0,
-          completedJobs: response.data.completedJobs || 0,
-          rating: response.data.rating || 0,
-          connections: response.data.connections || []
-        });
-
       } catch (error) {
         console.error(
-          "Error loading artisan dashboard:",
+          "Error loading artisan applications:",
           error
         );
       } finally {
@@ -68,8 +45,31 @@ function ArtisanDashboard({ currentUser }) {
       }
     };
 
-    fetchDashboardStats();
+    fetchApplications();
   }, []);
+
+  // ==========================================
+  // APPLICATION COUNTS
+  // ==========================================
+
+  const pendingApplications = applications.filter(
+    (application) =>
+      application.status === "pending"
+  ).length;
+
+  const reviewingApplications = applications.filter(
+    (application) =>
+      application.status === "reviewing"
+  ).length;
+
+  const shortlistedApplications = applications.filter(
+    (application) =>
+      application.status === "shortlisted"
+  ).length;
+
+  // ==========================================
+  // ARTISAN NAME
+  // ==========================================
 
   const userName =
     currentUser?.name ||
@@ -77,153 +77,140 @@ function ArtisanDashboard({ currentUser }) {
     "Artisan";
 
   return (
-    <div className="artisan-dashboard">
+    <div className="dashboard-home">
 
       {/* ==========================================
-          HEADER
+          WELCOME
       ========================================== */}
 
-      <div className="artisan-dashboard-header">
+      <div className="dashboard-page-header">
 
-        <div>
-          <h1>
-            Welcome back, {userName}!
-          </h1>
+        <h1>
+          Welcome back, {userName}!
+        </h1>
 
-          <p>
-            Manage your profile, job requests, and
-            projects.
-          </p>
-        </div>
+        <p>
+          Here's what's happening with your
+          artisan job applications.
+        </p>
 
       </div>
 
 
       {/* ==========================================
-          STATISTICS
+          STAT CARDS
       ========================================== */}
 
-      <div className="artisan-stats">
+      <section className="dashboard-stats">
 
-        {/* JOB REQUESTS */}
+        {/* TOTAL APPLICATIONS */}
 
-        <div className="artisan-stat-card">
+        <div className="stat-card">
 
-          <div className="stat-icon">
-            <FaBell />
-          </div>
+          <h3>
+            Total Applications
+          </h3>
 
-          <div>
-            <h3>
-              {loading ? "..." : stats.jobRequests}
-            </h3>
-
-            <p>
-              Job Requests
-            </p>
-          </div>
+          <strong>
+            {loading
+              ? "..."
+              : applications.length}
+          </strong>
 
         </div>
 
 
-        {/* ACTIVE JOBS */}
+        {/* PENDING */}
 
-        <div className="artisan-stat-card">
+        <div className="stat-card">
 
-          <div className="stat-icon">
-            <FaBriefcase />
-          </div>
+          <h3>
+            Pending
+          </h3>
 
-          <div>
-            <h3>
-              {loading ? "..." : stats.activeJobs}
-            </h3>
-
-            <p>
-              Active Jobs
-            </p>
-          </div>
+          <strong>
+            {loading
+              ? "..."
+              : pendingApplications}
+          </strong>
 
         </div>
 
 
-        {/* COMPLETED JOBS */}
+        {/* UNDER REVIEW */}
 
-        <div className="artisan-stat-card">
+        <div className="stat-card">
 
-          <div className="stat-icon">
-            <FaCheckCircle />
-          </div>
+          <h3>
+            Under Review
+          </h3>
 
-          <div>
-            <h3>
-              {loading ? "..." : stats.completedJobs}
-            </h3>
-
-            <p>
-              Completed Jobs
-            </p>
-          </div>
+          <strong>
+            {loading
+              ? "..."
+              : reviewingApplications}
+          </strong>
 
         </div>
 
 
-        {/* RATING */}
+        {/* SHORTLISTED */}
 
-        <div className="artisan-stat-card">
+        <div className="stat-card">
 
-          <div className="stat-icon">
-            <FaStar />
-          </div>
+          <h3>
+            Shortlisted
+          </h3>
 
-          <div>
-            <h3>
-              {loading ? "..." : stats.rating}
-            </h3>
-
-            <p>
-              Rating
-            </p>
-          </div>
+          <strong>
+            {loading
+              ? "..."
+              : shortlistedApplications}
+          </strong>
 
         </div>
 
-      </div>
+      </section>
 
 
       {/* ==========================================
           QUICK ACTIONS
       ========================================== */}
 
-      <div className="artisan-section">
+      <section className="dashboard-section">
 
-        <div className="section-heading">
+        <div className="section-header">
 
-          <h2>
-            Quick Actions
-          </h2>
+          <div>
 
-          <p>
-            Manage your artisan activities.
-          </p>
+            <h2>
+              Quick Actions
+            </h2>
+
+            <p>
+              Quickly access your most important
+              artisan job search activities.
+            </p>
+
+          </div>
 
         </div>
 
 
-        <div className="artisan-actions">
+        <div className="applicant-actions">
 
-          {/* FIND JOBS */}
+          {/* FIND ARTISAN JOBS */}
 
           <button
             type="button"
-            className="artisan-action-card"
+            className="applicant-action-card"
             onClick={() =>
-              navigate("/dashboard/artisan-jobs")
+              navigate("/dashboard/search-jobs")
             }
           >
 
             <span className="action-icon">
-              <FaSearch />
+              🔎
             </span>
 
             <div>
@@ -233,8 +220,8 @@ function ArtisanDashboard({ currentUser }) {
               </h3>
 
               <p>
-                Find opportunities that match
-                your skills.
+                Discover new artisan job
+                opportunities that match your skills.
               </p>
 
             </div>
@@ -242,29 +229,29 @@ function ArtisanDashboard({ currentUser }) {
           </button>
 
 
-          {/* JOB REQUESTS */}
+          {/* MY APPLICATIONS */}
 
           <button
             type="button"
-            className="artisan-action-card"
+            className="applicant-action-card"
             onClick={() =>
-              navigate("/dashboard/job-requests")
+              navigate("/dashboard/applications")
             }
           >
 
             <span className="action-icon">
-              <FaBell />
+              📄
             </span>
 
             <div>
 
               <h3>
-                Job Requests
+                My Applications
               </h3>
 
               <p>
-                View requests and applications
-                from employers.
+                View and track the artisan jobs
+                you have applied for.
               </p>
 
             </div>
@@ -272,18 +259,48 @@ function ArtisanDashboard({ currentUser }) {
           </button>
 
 
-          {/* PROFILE */}
+          {/* SAVED JOBS */}
 
           <button
             type="button"
-            className="artisan-action-card"
+            className="applicant-action-card"
+            onClick={() =>
+              navigate("/dashboard/saved-jobs")
+            }
+          >
+
+            <span className="action-icon">
+              🔖
+            </span>
+
+            <div>
+
+              <h3>
+                Saved Jobs
+              </h3>
+
+              <p>
+                View artisan jobs you saved
+                for later.
+              </p>
+
+            </div>
+
+          </button>
+
+
+          {/* ARTISAN PROFILE */}
+
+          <button
+            type="button"
+            className="applicant-action-card"
             onClick={() =>
               navigate("/dashboard/artisan-profile")
             }
           >
 
             <span className="action-icon">
-              <FaUser />
+              👤
             </span>
 
             <div>
@@ -293,8 +310,8 @@ function ArtisanDashboard({ currentUser }) {
               </h3>
 
               <p>
-                Keep your skills and information
-                updated.
+                Keep your artisan information and
+                skills up to date.
               </p>
 
             </div>
@@ -303,148 +320,117 @@ function ArtisanDashboard({ currentUser }) {
 
         </div>
 
-      </div>
+      </section>
 
 
       {/* ==========================================
-          EMPLOYER CONNECTIONS
+          RECENT APPLICATIONS
       ========================================== */}
 
-      <div className="artisan-section">
+      <section className="dashboard-section">
 
-        <div className="section-heading">
+        <div className="section-header">
 
-          <h2>
-            Employer Connections
-          </h2>
+          <div>
 
-          <p>
-            Employers you are currently working
-            with or being considered by.
-          </p>
+            <h2>
+              Recent Applications
+            </h2>
+
+            <p>
+              Track your latest artisan job
+              applications.
+            </p>
+
+          </div>
 
         </div>
 
 
         {loading ? (
 
-          <div className="empty-artisan">
+          <p>
+            Loading applications...
+          </p>
 
-            <div className="empty-icon">
-              <FaUsers />
-            </div>
+        ) : applications.length === 0 ? (
 
-            <h3>
-              Loading connections...
-            </h3>
-
-          </div>
-
-        ) : stats.connections.length === 0 ? (
-
-          <div className="empty-artisan">
-
-            <div className="empty-icon">
-              <FaUsers />
-            </div>
+          <div className="empty-state">
 
             <h3>
-              No Employer Connections Yet
+              No applications yet
             </h3>
 
             <p>
-              Apply for artisan jobs and employers
-              will appear here when they review,
-              shortlist, or hire you.
+              Start applying for artisan jobs
+              to see your applications here.
             </p>
 
           </div>
 
         ) : (
 
-          <div className="artisan-connections">
+          <div className="application-list">
 
-            {stats.connections
+            {applications
               .slice(0, 5)
-              .map((application) => {
+              .map((application) => (
 
-                const employer =
-                  application.job?.employer;
+                <div
+                  className="application-item"
+                  key={application._id}
+                >
 
-                return (
-                  <div
-                    className="artisan-connection-card"
-                    key={application._id}
-                  >
+                  <div>
 
-                    <div className="connection-avatar">
+                    <h3>
+                      {application.job?.title ||
+                        "Job"}
+                    </h3>
 
-                      {employer?.profileImage ? (
+                    <p>
+                      {application.job?.company ||
+                        "Company"}
+                    </p>
 
-                        <img
-                          src={employer.profileImage}
-                          alt={
-                            employer.name ||
-                            "Employer"
-                          }
-                        />
+                    <small>
+                      {application.job?.location ||
+                        ""}
+                    </small>
 
-                      ) : (
-
-                        <span>
-                          {(
-                            employer?.name ||
-                            employer?.companyName ||
-                            "E"
-                          )
-                            .charAt(0)
-                            .toUpperCase()}
-                        </span>
-
-                      )}
-
-                    </div>
+                  </div>
 
 
-                    <div className="connection-info">
-
-                      <h3>
-                        {employer?.companyName ||
-                          employer?.name ||
-                          "Employer"}
-                      </h3>
-
-                      <p>
-                        {application.job?.title ||
-                          "Job"}
-                      </p>
-
-                      <small>
-                        {application.job?.location ||
-                          ""}
-                      </small>
-
-                    </div>
-
+                  <div className="application-right">
 
                     <span
-                      className={`connection-status ${application.status}`}
+                      className={`status ${application.status}`}
                     >
                       {application.status}
                     </span>
 
+                    <small>
+                      Applied{" "}
+                      {new Date(
+                        application.createdAt
+                      ).toLocaleDateString()}
+                    </small>
+
                   </div>
-                );
-              })}
+
+                </div>
+
+              ))}
 
           </div>
 
         )}
 
-      </div>
+      </section>
 
     </div>
   );
 }
 
 export default ArtisanDashboard;
+

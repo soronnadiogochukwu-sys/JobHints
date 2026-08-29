@@ -32,7 +32,7 @@ const registerUser = async (req, res) => {
     console.log("ROLE RECEIVED BY BACKEND:", role);
     console.log("ROLE TYPE:", typeof role);
 
-if (!["applicant", "employer", "artisan"].includes(role)) {
+if (!["graduate", "employer", "artisan"].includes(role)) {
   console.log("INVALID ROLE:", role);
 
   return res.status(400).json({

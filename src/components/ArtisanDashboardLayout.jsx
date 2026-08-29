@@ -1,21 +1,11 @@
-import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import {
-  FaBriefcase,
-  FaArrowRight,
-  FaArrowLeft,
-} from "react-icons/fa6";
-
+import { FaBriefcase } from "react-icons/fa";
 import "./DashboardLayout.css";
 
-function ArtisanDashboardLayout({ currentUser, onLogout }) {
+function DashboardLayout({ currentUser, onLogout }) {
   const navigate = useNavigate();
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const handleLogout = () => {
-    setSidebarOpen(false);
-
     if (onLogout) {
       onLogout();
     } else {
@@ -25,157 +15,167 @@ function ArtisanDashboardLayout({ currentUser, onLogout }) {
     }
   };
 
-  const handleNavClick = () => {
-    // Close sidebar on tablet/mobile
-    setSidebarOpen(false);
+  const role = currentUser?.role || "applicant";
+
+  const dashboardLinks = {
+    applicant: [
+      {
+        label: "Dashboard",
+        path: "/dashboard",
+        end: true,
+      },
+      {
+        label: "Search Jobs",
+        path: "/dashboard/search-jobs",
+      },
+      {
+        label: "My Applications",
+        path: "/dashboard/applications",
+      },
+      {
+        label: "Saved Jobs",
+        path: "/dashboard/saved-jobs",
+      },
+      {
+        label: "Messages",
+        path: "/dashboard/messages",
+      },
+      {
+        label: "Notifications",
+        path: "/dashboard/notifications",
+      },
+      {
+        label: "Profile",
+        path: "/dashboard/profile",
+      },
+      {
+        label: "Settings",
+        path: "/dashboard/settings",
+      },
+    ],
+
+    artisan: [
+      {
+        label: "Dashboard",
+        path: "/dashboard",
+        end: true,
+      },
+      {
+        label: "Search Jobs",
+        path: "/dashboard/search-jobs",
+      },
+      {
+        label: "My Applications",
+        path: "/dashboard/applications",
+      },
+      {
+        label: "Saved Jobs",
+        path: "/dashboard/saved-jobs",
+      },
+      {
+        label: "Messages",
+        path: "/dashboard/messages",
+      },
+      {
+        label: "Notifications",
+        path: "/dashboard/notifications",
+      },
+      {
+        label: "Profile",
+        path: "/dashboard/artisan-profile",
+      },
+      {
+        label: "Settings",
+        path: "/dashboard/settings",
+      },
+    ],
+
+    employer: [
+      {
+        label: "Dashboard",
+        path: "/dashboard",
+        end: true,
+      },
+      {
+        label: "Post Job",
+        path: "/dashboard/post-job",
+      },
+      {
+        label: "Manage Jobs",
+        path: "/dashboard/manage-jobs",
+      },
+      {
+        label: "Applications",
+        path: "/dashboard/applications",
+      },
+      {
+        label: "Messages",
+        path: "/dashboard/messages",
+      },
+      {
+        label: "Notifications",
+        path: "/dashboard/notifications",
+      },
+      {
+        label: "Profile",
+        path: "/dashboard/profile",
+      },
+      {
+        label: "Settings",
+        path: "/dashboard/settings",
+      },
+    ],
   };
+
+  const links =
+    dashboardLinks[role] || dashboardLinks.applicant;
+
+  const dashboardTitle =
+    role === "artisan"
+      ? "Artisan Dashboard"
+      : role === "employer"
+      ? "Employer Dashboard"
+      : "Applicant Dashboard";
+
+  const userName =
+    currentUser?.name ||
+    currentUser?.fullName ||
+    role.charAt(0).toUpperCase() + role.slice(1);
 
   return (
     <div className="dashboard-layout">
 
-      {/* ==========================================
-          MOBILE / TABLET OVERLAY
-      ========================================== */}
+      {/* SIDEBAR */}
+      <aside className="dashboard-sidebar">
 
-      {sidebarOpen && (
-        <div
-          className="dashboard-overlay"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* ==========================================
-          SIDEBAR
-      ========================================== */}
-
-      <aside
-        className={`dashboard-sidebar ${
-          sidebarOpen ? "open" : ""
-        }`}
-      >
-
-        {/* SIDEBAR HEADER */}
-        <div className="dashboard-sidebar-header">
-
-          {/* LOGO */}
-          <div className="dashboard-logo">
-            <FaBriefcase />
-            <span>JobHints</span>
-          </div>
-
-          {/* CLOSE BUTTON
-              Hidden automatically on desktop through CSS
-          */}
-          <button
-            type="button"
-            className="dashboard-close-btn"
-            onClick={() => setSidebarOpen(false)}
-            aria-label="Close menu"
-          >
-            <FaArrowLeft />
-          </button>
-
+        {/* LOGO */}
+        <div className="dashboard-logo">
+          <FaBriefcase />
+          <span>JobHints</span>
         </div>
 
-        {/* ==========================================
-            NAVIGATION
-        ========================================== */}
-
+        {/* NAVIGATION */}
         <nav className="dashboard-nav">
 
-          <NavLink
-            to="/dashboard"
-            end
-            onClick={handleNavClick}
-            className={({ isActive }) =>
-              isActive
-                ? "dashboard-link active"
-                : "dashboard-link"
-            }
-          >
-            Dashboard
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/artisan-jobs"
-            onClick={handleNavClick}
-            className={({ isActive }) =>
-              isActive
-                ? "dashboard-link active"
-                : "dashboard-link"
-            }
-          >
-            Find Jobs
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/job-requests"
-            onClick={handleNavClick}
-            className={({ isActive }) =>
-              isActive
-                ? "dashboard-link active"
-                : "dashboard-link"
-            }
-          >
-            Job Requests
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/my-jobs"
-            onClick={handleNavClick}
-            className={({ isActive }) =>
-              isActive
-                ? "dashboard-link active"
-                : "dashboard-link"
-            }
-          >
-            My Jobs
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/messages"
-            onClick={handleNavClick}
-            className={({ isActive }) =>
-              isActive
-                ? "dashboard-link active"
-                : "dashboard-link"
-            }
-          >
-            Messages
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/artisan-profile"
-            onClick={handleNavClick}
-            className={({ isActive }) =>
-              isActive
-                ? "dashboard-link active"
-                : "dashboard-link"
-            }
-          >
-            Profile
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/artisan-settings"
-            onClick={handleNavClick}
-            className={({ isActive }) =>
-              isActive
-                ? "dashboard-link active"
-                : "dashboard-link"
-            }
-          >
-            Settings
-          </NavLink>
+          {links.map((link) => (
+            <NavLink
+              key={link.path}
+              to={link.path}
+              end={link.end}
+              className={({ isActive }) =>
+                isActive
+                  ? "dashboard-link active"
+                  : "dashboard-link"
+              }
+            >
+              {link.label}
+            </NavLink>
+          ))}
 
         </nav>
 
-        {/* ==========================================
-            LOGOUT
-        ========================================== */}
-
+        {/* LOGOUT */}
         <button
-          type="button"
           className="dashboard-logout"
           onClick={handleLogout}
         >
@@ -184,61 +184,27 @@ function ArtisanDashboardLayout({ currentUser, onLogout }) {
 
       </aside>
 
-      {/* ==========================================
-          MAIN CONTENT
-      ========================================== */}
-
+      {/* MAIN DASHBOARD AREA */}
       <main className="dashboard-content">
 
-        {/* ==========================================
-            TOP BAR
-        ========================================== */}
-
+        {/* USER HEADER */}
         <header className="dashboard-topbar">
 
-          {/* HAMBURGER */}
-          <button
-            type="button"
-            className="dashboard-menu-btn"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Open menu"
-            aria-expanded={sidebarOpen}
-          >
-            <FaArrowRight />
-          </button>
+          <div>
+            <h2>{userName}</h2>
 
-          {/* USER INFO */}
-          <div className="dashboard-user-info">
-
-            <h2>
-              {currentUser?.name ||
-                currentUser?.fullName ||
-                "Artisan"}
-            </h2>
-
-            <p>
-              Artisan Dashboard
-            </p>
-
+            <p>{dashboardTitle}</p>
           </div>
 
-          {/* AVATAR */}
           <div className="dashboard-avatar">
-            {(
-              currentUser?.name ||
-              currentUser?.fullName ||
-              "A"
-            )
+            {userName
               .charAt(0)
               .toUpperCase()}
           </div>
 
         </header>
 
-        {/* ==========================================
-            PAGE CONTENT
-        ========================================== */}
-
+        {/* PAGE CONTENT */}
         <div className="dashboard-page-content">
           <Outlet />
         </div>
@@ -249,4 +215,4 @@ function ArtisanDashboardLayout({ currentUser, onLogout }) {
   );
 }
 
-export default ArtisanDashboardLayout;
+export default DashboardLayout;

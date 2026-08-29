@@ -14,29 +14,47 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-// Applicant applies for a job
+
+// ==========================================
+// GRADUATE + ARTISAN APPLY FOR JOB
+// ==========================================
+
 router.post(
   "/:jobId",
   authMiddleware,
-  roleMiddleware("applicant"),
+  roleMiddleware("graduate", "artisan"),
   applyForJob
 );
 
-// Applicant views their applications
+
+// ==========================================
+// GRADUATE + ARTISAN VIEW THEIR APPLICATIONS
+// ==========================================
+
 router.get(
   "/my-applications",
   authMiddleware,
-  roleMiddleware("applicant"),
+  roleMiddleware("graduate", "artisan"),
   getMyApplications
 );
 
-// Employer views applications for their jobs
+
+// ==========================================
+// EMPLOYER VIEW APPLICATIONS
+// ==========================================
+
 router.get(
   "/employer",
   authMiddleware,
   roleMiddleware("employer"),
   getEmployerApplications
 );
+
+
+// ==========================================
+// EMPLOYER DASHBOARD STATS
+// ==========================================
+
 router.get(
   "/employer/dashboard-stats",
   authMiddleware,
@@ -44,15 +62,29 @@ router.get(
   getEmployerDashboardStats
 );
 
+
+// ==========================================
+// EMPLOYER UPDATE APPLICATION STATUS
+// ==========================================
+
 router.put(
   "/:id/status",
   authMiddleware,
   roleMiddleware("employer"),
   updateApplicationStatus
 );
+
+
+// ==========================================
+// ARTISAN DASHBOARD STATS
+// ==========================================
+
 router.get(
   "/artisan/dashboard-stats",
   authMiddleware,
+  roleMiddleware("artisan"),
   getArtisanDashboardStats
 );
+
+
 module.exports = router;
