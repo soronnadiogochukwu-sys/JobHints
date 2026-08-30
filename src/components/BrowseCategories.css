@@ -8,6 +8,17 @@
     align-items: center;
     margin-bottom:  15px;
 }
+.browse-header h2{
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+.browse-header p{
+  font-size: 0.95rem;
+  margin: 5px;
+  max-width: 620px;
+  color: #6b7280;
+}
 .category-grid{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));

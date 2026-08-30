@@ -5,6 +5,7 @@ import ArtisansData from "../data/ArtisansData";
 import ArtisansCard from "../components/ArtisansCard";
 import ArtisansModal from "../components/ArtisansModal";
 import FeedbackModal from "../components/FeedbackModal";
+import Footer from "../components/Footer"
 import "../components/FeaturedArtisans.css";
 
 function Artisans({ currentUser, openLogin, openSignup }) {
@@ -39,6 +40,7 @@ function Artisans({ currentUser, openLogin, openSignup }) {
   };
 
   return (
+    <div>
     <section className="featured-artisans">
       <div className="featured-header">
         <div>
@@ -74,6 +76,10 @@ function Artisans({ currentUser, openLogin, openSignup }) {
         />
       )}
     </section>
+    
+    {/* Footer */}
+    <Footer/>
+    </div>
   );
 }
 

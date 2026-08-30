@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import JobCard from "../components/JobCards";
+import Footer from "../components/Footer"
 import "../components/FeaturedJobs.css";
 
 function Jobs() {
@@ -30,6 +31,7 @@ function Jobs() {
   }, []);
 
   return (
+    <div>
     <section className="featured">
       <div className="heading">
         <div>
@@ -74,6 +76,8 @@ function Jobs() {
         </div>
       )}
     </section>
+    <Footer/>
+    </div>
   );
 }
 

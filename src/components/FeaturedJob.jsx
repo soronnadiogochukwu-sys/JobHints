@@ -60,11 +60,10 @@ function FeaturedJob({ onOpen }) {
 
       {/* HEADER */}
       <div className="heading">
-
-        <h2>
-          Featured Jobs For Graduates
-        </h2>
-
+        <div>
+        <h2> Featured Jobs For Graduates</h2>
+        <p>Discover latest jobs for Graduates and apply</p>
+        </div>
         <button
           className="view-all-btn"
           onClick={() => navigate("/jobs")}

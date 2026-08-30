@@ -1,5 +1,6 @@
 import heroImage from "../assets/images/heroImage.jpg";
 import { FaBriefcase, FaUserTie } from "react-icons/fa";
+import "./Hero.css"
 function Hero() {
   return (
     <section className="hero">

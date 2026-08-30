@@ -4,7 +4,7 @@
 
 .featured {
   width: 100%;
-  padding: 70px 6%;
+  padding: 0 2%;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -24,11 +24,16 @@
 
 .heading h2 {
   margin: 0;
-  font-size: 32px;
+  font-size: 22px;
   font-weight: 700;
   color: #111827;
 }
-
+.heading p{
+  font-size: 0.95rem;
+  margin: 5px;
+  max-width: 620px;
+  color: #6b7280;
+}
 .view-all-btn {
   display: inline-flex;
   align-items: center;
