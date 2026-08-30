@@ -16,6 +16,7 @@
   border: 1px solid #d6d6e7;
   font-size: 15px;
   background: #fafafa;
+  margin: 2px;
 }
 
 .close-Login-button {
@@ -37,6 +38,7 @@
   background: #6C2BD9;
   color: white;
   cursor: pointer;
+  margin: 2px;
 }
 
 .auth-form .Login-button,

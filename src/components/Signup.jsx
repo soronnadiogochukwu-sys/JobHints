@@ -56,7 +56,7 @@ function Signup({ close, onSignup }) {
       setLoading(true);
 
       // Backend currently accepts:
-      // applicant OR employer
+      // graduates, artisans OR employers
       const backendRole = role;
       console.log("ROLE SELECTED:", role);
       console.log("ROLE SENT TO BACKEND:", backendRole);
@@ -174,7 +174,7 @@ function Signup({ close, onSignup }) {
               Employer
             </option>
 
-            <option value="applicant">
+            <option value="graduate">
               Graduate
             </option>
 
