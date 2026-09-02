@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaXmark } from "react-icons/fa6";
 import Modal from "./Modal";
 import FeedbackModal from "./FeedbackModal";
@@ -8,6 +9,7 @@ import "./Login.css";
 function Login({ close, onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const [feedback, setFeedback] = useState(null);
   const [authenticatedUser, setAuthenticatedUser] = useState(null);
@@ -162,6 +164,17 @@ function Login({ close, onLogin }) {
             onClose={handleFeedbackClose}
           />
         )}
+
+        <button
+        type="button"
+        className="forgot-password-link"
+        onClick={() => {
+        close();
+        navigate("/forgot-password");
+      }}
+      >
+        Forgot Password?
+      </button>
 
       </div>
     </Modal>

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Routes,
   Route,
   Navigate,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
@@ -43,11 +44,15 @@ import ArtisanDashboard from "./pages/ArtisanDashboard";
 import ArtisanDashboardLayout from "./components/ArtisanDashboardLayout";
 
 import EmployerRoute from "./components/EmployerRoute";
+import ResetPassword from "./pages/ResetPassword";
+
+import ForgotPassword from "./pages/ForgotPassword";
 
 import "./App.css";
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // ==========================================
   // MODAL STATE
@@ -56,6 +61,16 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+
+    // Open Login modal when returning from password reset
+  useEffect(() => {
+    if (location.state?.openLogin) {
+      setShowLogin(true);
+
+      // Remove the state so refreshing does not reopen the modal
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
 
   // ==========================================
   // CURRENT USER
@@ -710,6 +725,15 @@ function App() {
       <Route 
       path="/contact" 
       element={<Contact />} 
+      />
+
+      <Route
+        path="/forgot-password"
+        element={<ForgotPassword />}
+      />
+      <Route
+        path="/reset-password/:token"
+        element={<ResetPassword />}
       />
       </Routes>
 

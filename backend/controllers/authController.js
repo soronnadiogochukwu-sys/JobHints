@@ -1,6 +1,16 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+
+// EMAIL TRANSPORTER
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 // REGISTER USER
 const registerUser = async (req, res) => {
@@ -138,10 +148,186 @@ const login = async (req, res) => {
     });
   }
 };
+// ==========================================
+// FORGOT PASSWORD
+// ==========================================
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
 
+    if (!email) {
+      return res.status(400).json({
+        message: "Please provide your email address",
+      });
+    }
+
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "No account found with this email address",
+      });
+    }
+
+    // Generate a random reset token
+    const resetToken = require("crypto")
+      .randomBytes(32)
+      .toString("hex");
+
+    // Save token and expiration time
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires =
+      Date.now() + 15 * 60 * 1000; // 15 minutes
+
+    await user.save();
+
+    // For now, return the reset link.
+    // Later we can send this link through email.
+    // Create password reset link
+const resetLink = `https://jobhints-go.onrender.com/reset-password/${resetToken}`;
+
+// Send reset email
+await transporter.sendMail({
+  from: `"JobHints" <${process.env.EMAIL_USER}>`,
+  to: user.email,
+  subject: "JobHints Password Reset",
+  html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 30px;">
+      
+      <h2 style="color: #2563eb;">
+        Reset Your JobHints Password
+      </h2>
+
+      <p>Hello ${user.name},</p>
+
+      <p>
+        We received a request to reset the password for your
+        JobHints account.
+      </p>
+
+      <p>
+        Click the button below to create a new password:
+      </p>
+
+      <div style="margin: 30px 0;">
+        <a
+          href="${resetLink}"
+          style="
+            background: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+          "
+        >
+          Reset Password
+        </a>
+      </div>
+
+      <p>
+        This password reset link will expire in
+        <strong>15 minutes</strong>.
+      </p>
+
+      <p>
+        If you did not request a password reset, you can safely
+        ignore this email.
+      </p>
+
+      <p>
+        Regards,<br />
+        <strong>JobHints Team</strong>
+      </p>
+
+    </div>
+  `,
+});
+
+res.status(200).json({
+  message:
+    "Password reset link has been sent to your email address.",
+});
+
+  } catch (error) {
+    console.error("Forgot password error:", error);
+
+    res.status(500).json({
+      message: "Failed to process forgot password request",
+    });
+  }
+};
+
+
+// ==========================================
+// RESET PASSWORD
+// ==========================================
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({
+        message: "Please provide a new password",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message:
+          "Password must be at least 6 characters long",
+      });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: {
+        $gt: Date.now(),
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message:
+          "Password reset token is invalid or has expired",
+      });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(
+      password,
+      10
+    );
+
+    user.password = hashedPassword;
+
+    // Clear reset token after successful reset
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+
+    await user.save();
+
+    res.status(200).json({
+      message:
+        "Password reset successfully. You can now login.",
+    });
+
+  } catch (error) {
+    console.error("Reset password error:", error);
+
+    res.status(500).json({
+      message: "Failed to reset password",
+    });
+  }
+};
 
 
 module.exports = {
   registerUser,
-  login
+  login,
+  forgotPassword,
+  resetPassword
 };

@@ -25,7 +25,27 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6,
+  },
 
+  resetPasswordToken: {
+    type: String,
+    default: null,
+  },
+
+  resetPasswordExpires: {
+    type: Date,
+    default: null,
+  },
+
+role: {
+  type: String,
+  enum: ["graduate", "employer", "artisan"],
+  required: true,
+},
     role: {
       type: String,
       enum: ["graduate", "employer", "artisan"],
@@ -61,6 +81,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    resetPasswordToken: {
+    type: String,
+    default: null,
+    },
+
+  resetPasswordExpires: {
+    type: Date,
+    default: null,
+  },
   },
   {
     timestamps: true,
