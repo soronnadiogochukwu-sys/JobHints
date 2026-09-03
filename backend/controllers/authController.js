@@ -1,19 +1,10 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
 // EMAIL TRANSPORTER
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 // REGISTER USER
 const registerUser = async (req, res) => {
   try {
@@ -191,9 +182,9 @@ const forgotPassword = async (req, res) => {
 const resetLink = `https://jobhints-go.onrender.com/reset-password/${resetToken}`;
 
 // Send reset email
-await transporter.sendMail({
-  from: `"JobHints" <${process.env.EMAIL_USER}>`,
-  to: user.email,
+const { data, error } = await resend.emails.send({
+  from: "JobHints <onboarding@resend.dev>",
+  to: [user.email],
   subject: "JobHints Password Reset",
   html: `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 30px;">
@@ -247,7 +238,13 @@ await transporter.sendMail({
     </div>
   `,
 });
+  if (error) {
+    console.error("Resend email error:", error);
 
+    return res.status(500).json({
+      message: "Failed to send password reset email",
+    });
+  }
 res.status(200).json({
   message:
     "Password reset link has been sent to your email address.",
