@@ -138,7 +138,7 @@ function Contact() {
 
                 <div>
                   <h3>Phone</h3>
-                  <p>+234 800 000 0000</p>
+                  <p>+234 7070 2800 60</p>
                 </div>
               </div>
 
