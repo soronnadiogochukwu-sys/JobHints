@@ -82,7 +82,7 @@ function DashboardLayout({ currentUser, onLogout }) {
       },
       {
         label: "Profile",
-        path: "/dashboard/artisan-profile",
+        path: "/dashboard/profile",
       },
       {
         label: "Settings",

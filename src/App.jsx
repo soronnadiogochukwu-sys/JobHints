@@ -415,20 +415,15 @@ function App() {
           ==================================== */}
 
           <Route
-            path="profile"
-            element={
-              currentUser?.role === "applicant" ? (
-                <DashboardProfile
-                  currentUser={currentUser}
-                />
-              ) : (
-                <Navigate
-                  to="/dashboard"
-                  replace
-                />
-              )
-            }
-          />
+          path="profile"
+          element={
+            ["graduate", "artisan"].includes(currentUser?.role) ? (
+              <DashboardProfile currentUser={currentUser} />
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
+          }
+        />
 
           {/* ====================================
               APPLICANT SETTINGS
@@ -437,18 +432,13 @@ function App() {
           <Route
             path="settings"
             element={
-              currentUser?.role === "applicant" ? (
-                <DashboardSettings
-                  currentUser={currentUser}
-                />
-              ) : (
-                <Navigate
-                  to="/dashboard"
-                  replace
-                />
-              )
-            }
-          />
+              ["graduate", "artisan"].includes(currentUser?.role) ? (
+              <DashboardSettings currentUser={currentUser} />
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
+          }
+        />
 
           {/* ====================================
               EMPLOYER ROUTES
@@ -563,26 +553,6 @@ function App() {
                   <p>
                     Your active and completed jobs
                     will appear here.
-                  </p>
-                </div>
-              ) : (
-                <Navigate
-                  to="/dashboard"
-                  replace
-                />
-              )
-            }
-          />
-
-          <Route
-            path="artisan-profile"
-            element={
-              currentUser?.role === "artisan" ? (
-                <div>
-                  <h1>Artisan Profile</h1>
-
-                  <p>
-                    Manage your artisan profile.
                   </p>
                 </div>
               ) : (
