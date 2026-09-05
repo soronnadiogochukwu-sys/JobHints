@@ -2,16 +2,21 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
+    // =========================
+    // BASIC USER INFORMATION
+    // =========================
     name: {
       type: String,
       required: true,
       trim: true,
-        },
-      companyName: {
+    },
+
+    companyName: {
       type: String,
       default: "",
       trim: true,
-       },
+    },
+
     email: {
       type: String,
       required: true,
@@ -25,33 +30,16 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6,
-  },
 
-  resetPasswordToken: {
-    type: String,
-    default: null,
-  },
-
-  resetPasswordExpires: {
-    type: Date,
-    default: null,
-  },
-
-role: {
-  type: String,
-  enum: ["graduate", "employer", "artisan"],
-  required: true,
-},
     role: {
       type: String,
       enum: ["graduate", "employer", "artisan"],
       required: true,
     },
 
+    // =========================
+    // CONTACT & PROFILE
+    // =========================
     phone: {
       type: String,
       default: "",
@@ -81,15 +69,55 @@ role: {
       type: String,
       default: "",
     },
-    resetPasswordToken: {
-    type: String,
-    default: null,
+
+    // =========================
+    // ARTISAN PROFILE
+    // =========================
+    trade: {
+      type: String,
+      default: "",
+      trim: true,
     },
 
-  resetPasswordExpires: {
-    type: Date,
-    default: null,
-  },
+    experience: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    services: {
+      type: [String],
+      default: [],
+    },
+
+    availability: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    portfolio: {
+      type: [String],
+      default: [],
+    },
+
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+
+    // =========================
+    // PASSWORD RESET
+    // =========================
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -9,6 +9,7 @@ const userRoutes = require("./routes/userRoutes");
 const jobRoutes = require("./routes/jobRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 const statsRoutes = require("./routes/statsRoutes");
+const profileRoutes = require("./routes/profileRoutes");
 
 
 const app = express();
@@ -28,6 +29,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api/profile", profileRoutes);
+
 
 // Home route
 app.get("/", (req, res) => {
