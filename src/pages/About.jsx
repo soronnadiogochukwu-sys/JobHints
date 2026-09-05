@@ -130,28 +130,28 @@ function About() {
 
           <div className="about-stat">
             <h2>
-              {loading ? "..." : `${stats.jobs}+`}
+             {loading ? "..." : stats.jobs}
             </h2>
             <p>Jobs Posted</p>
           </div>
 
           <div className="about-stat">
             <h2>
-              {loading ? "..." : `${stats.employers}+`}
+              {loading ? "..." : stats.employers}
             </h2>
             <p>Employers</p>
           </div>
 
           <div className="about-stat">
             <h2>
-              {loading ? "..." : `${stats.graduates}+`}
+              {loading ? "..." : stats.graduates}
             </h2>
             <p>Graduates</p>
           </div>
 
           <div className="about-stat">
             <h2>
-              {loading ? "..." : `${stats.artisans}+`}
+              {loading ? "..." : stats.artisans}
             </h2>
             <p>Artisans</p>
           </div>
