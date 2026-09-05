@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import API from "../services/api";
 import "./DashboardProfile.css";
+import toast from "react-hot-toast";
 
 function DashboardProfile({ currentUser }) {
 const isArtisan = currentUser?.role === "artisan";
@@ -163,7 +164,7 @@ const handleImageUpload = async () => {
       fileInputRef.current.value = "";
     }
 
-    alert("Profile picture uploaded successfully.");
+    toast.success("Profile picture uploaded successfully!");
 
   } catch (error) {
     console.error(
@@ -181,10 +182,10 @@ const handleImageUpload = async () => {
       error.response?.data
     );
 
-    alert(
-      error.response?.data?.message ||
-      "Failed to upload profile picture. Please try again."
-    );
+    toast.error(
+  error.response?.data?.message ||
+  "Failed to upload profile picture. Please try again."
+  );
 
   } finally {
     setUploadingImage(false);

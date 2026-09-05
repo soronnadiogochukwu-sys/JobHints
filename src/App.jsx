@@ -48,9 +48,17 @@ import ResetPassword from "./pages/ResetPassword";
 
 import ForgotPassword from "./pages/ForgotPassword";
 
+import { Toaster } from "react-hot-toast";
+
 import "./App.css";
 
 function App() {
+  <Toaster
+  position="top-right"
+  toastOptions={{
+    duration: 3000,
+  }}
+/>
   const navigate = useNavigate();
   const location = useLocation();
 
