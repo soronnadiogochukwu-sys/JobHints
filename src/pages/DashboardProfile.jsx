@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import API from "../services/api";
-import "./DashboardProfile.css";
 import toast from "react-hot-toast";
+import "./DashboardProfile.css";
+
 
 function DashboardProfile({ currentUser }) {
 const isArtisan = currentUser?.role === "artisan";
@@ -164,7 +165,7 @@ const handleImageUpload = async () => {
       fileInputRef.current.value = "";
     }
 
-    toast.success("Profile picture uploaded successfully!");
+   toast.success("Profile picture uploaded successfully!");
 
   } catch (error) {
     console.error(
@@ -196,83 +197,90 @@ const handleImageUpload = async () => {
 // ==========================================
 
 const handleSubmit = async (e) => {
-e.preventDefault();
+  e.preventDefault();
 
-```
-try {
-  setLoading(true);
+  try {
+    setLoading(true);
 
-  const profileData = {
-    name,
-    phone,
-    location,
-    bio,
-  };
+    const profileData = {
+      name,
+      phone,
+      location,
+      bio,
+    };
 
-  // Only send artisan fields for artisans
-  if (isArtisan) {
-    profileData.trade = trade;
+    // Only send artisan fields for artisans
+    if (isArtisan) {
+      profileData.trade = trade;
 
-    profileData.experience =
-      experience === ""
-        ? 0
-        : Number(experience);
+      profileData.experience =
+        experience === ""
+          ? 0
+          : Number(experience);
 
-    profileData.skills = skills
-      .split(",")
-      .map((skill) => skill.trim())
-      .filter(Boolean);
+      profileData.skills = skills
+        .split(",")
+        .map((skill) => skill.trim())
+        .filter(Boolean);
 
-    profileData.services = services
-      .split(",")
-      .map((service) => service.trim())
-      .filter(Boolean);
+      profileData.services = services
+        .split(",")
+        .map((service) => service.trim())
+        .filter(Boolean);
 
-    profileData.availability = availability;
+      profileData.availability = availability;
 
-    profileData.portfolio = portfolio
-      .split("\n")
-      .map((item) => item.trim())
-      .filter(Boolean);
+      profileData.portfolio = portfolio
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean);
 
-    profileData.isFeatured = isFeatured;
-  }
+      profileData.isFeatured = isFeatured;
+    }
 
-  const response = await API.put(
-    "/profile",
-    profileData
-  );
+        const response = await API.put(
+        "/profile",
+        profileData
+      );
 
-  const updatedUser = response.data.user;
+      const updatedUser = response.data.user;
 
-  // Keep localStorage updated
-  localStorage.setItem(
-    "currentUser",
-    JSON.stringify(updatedUser)
-  );
+      // Keep localStorage updated
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify(updatedUser)
+      );
 
-  alert("Profile updated successfully.");
+     toast.success("Profile updated successfully!");
+     
+      } catch (error) {
+        console.error(
+          "Profile update error:",
+          error
+        );
 
-} catch (error) {
-  console.error(
-    "Profile update error:",
-    error
-  );
+      console.error(
+        "Status:",
+        error.response?.status
+      );
 
-  alert(
-    error.response?.data?.message ||
-    "Failed to update profile. Please try again."
-  );
-} finally {
-  setLoading(false);
-}
-```
+          console.error(
+            "Response:",
+            error.response?.data
+          );
 
-};
+          toast.error(
+            error.response?.data?.message ||
+            "Failed to update profile. Please try again."
+          );
 
-return ( <div className="dashboard-page">
+        } finally {
+          setLoading(false);
+        }
+      };
+      return ( 
+      <div className="dashboard-page">
 
-```
   <div className="dashboard-page-header">
     <h1>My Profile</h1>
 
