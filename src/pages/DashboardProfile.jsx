@@ -183,7 +183,7 @@ const handleImageUpload = async () => {
       error.response?.data
     );
 
-    toast.error(
+  toast.error(
   error.response?.data?.message ||
   "Failed to upload profile picture. Please try again."
   );
@@ -264,22 +264,22 @@ const handleSubmit = async (e) => {
         error.response?.status
       );
 
-          console.error(
-            "Response:",
-            error.response?.data
-          );
+      console.error(
+        "Response:",
+        error.response?.data
+      );
 
-          toast.error(
-            error.response?.data?.message ||
-            "Failed to update profile. Please try again."
-          );
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to update profile. Please try again."
+      );
 
-        } finally {
-          setLoading(false);
-        }
-      };
-      return ( 
-      <div className="dashboard-page">
+    } finally {
+      setLoading(false);
+    }
+  };
+  return ( 
+  <div className="dashboard-page">
 
   <div className="dashboard-page-header">
     <h1>My Profile</h1>

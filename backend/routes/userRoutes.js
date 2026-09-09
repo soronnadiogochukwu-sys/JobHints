@@ -3,9 +3,11 @@ const express = require("express");
 const {
   getProfile,
   updateProfile,
+  getFeaturedArtisans,
 } = require("../controllers/userController");
 
 const authMiddleware = require("../middleware/authMiddleware");
+
 const upload = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
@@ -28,4 +30,13 @@ router.put(
   updateProfile
 );
 
+// ==========================================
+// GET FEATURED ARTISANS
+// ==========================================
+router.get(
+  "/featured-artisans",
+  getFeaturedArtisans
+);
+
 module.exports = router;
+

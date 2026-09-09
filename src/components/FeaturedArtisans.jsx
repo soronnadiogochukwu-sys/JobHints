@@ -1,16 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa6";
-import ArtisansData from "../data/ArtisansData";
+import API from "../services/api";
 import ArtisansCard from "../components/ArtisansCard";
 import ArtisansModal from "../components/ArtisansModal";
-import FeedbackModal from "./FeedbackModal";
+import FeedbackModal from "../components/FeedbackModal";
 import "./FeaturedArtisans.css";
 
 function FeaturedArtisans({ currentUser, openLogin, openSignup }) {
   const [selectedArtisan, setSelectedArtisan] = useState(null);
   const [feedback, setFeedback] = useState(null);
+  const [artisans, setArtisans] = useState([]);
   const navigate = useNavigate();
+
+  // ==========================================
+  // FETCH FEATURED ARTISANS
+  // ==========================================
+  useEffect(() => {
+    const fetchFeaturedArtisans = async () => {
+      try {
+        const response = await API.get("/users/featured-artisans");
+
+        setArtisans(response.data.artisans || []);
+
+      } catch (error) {
+        console.error(
+          "FETCH FEATURED ARTISANS ERROR:",
+          error
+        );
+
+        setArtisans([]);
+      }
+    };
+
+    fetchFeaturedArtisans();
+  }, []);
 
   const handleHireNow = (artisan) => {
     if (!currentUser) {
@@ -47,18 +71,27 @@ function FeaturedArtisans({ currentUser, openLogin, openSignup }) {
       <div className="featured-header">
         <div>
           <h2>Featured Artisans</h2>
-          <p>Discover skilled artisans ready to work on your next project.</p>
+          <p>
+            Discover skilled artisans ready to work on your next project.
+          </p>
         </div>
 
-        <button className="view-all-btn" onClick={() => navigate("/artisans") }>
+        <button
+          className="view-all-btn"
+          onClick={() => navigate("/artisans")}
+        >
           View All
           <FaArrowRight />
         </button>
       </div>
 
       <div className="artisans-grid">
-        {ArtisansData.slice(0, 4).map((artisan) => (
-          <ArtisansCard key={artisan.id} artisan={artisan} onHire={handleHireNow} />
+        {artisans.slice(0, 4).map((artisan) => (
+          <ArtisansCard
+            key={artisan._id}
+            artisan={artisan}
+            onHire={handleHireNow}
+          />
         ))}
       </div>
 
@@ -66,11 +99,9 @@ function FeaturedArtisans({ currentUser, openLogin, openSignup }) {
         <ArtisansModal
           artisan={selectedArtisan}
           onClose={closeModal}
-        //   currentUser={currentUser}
-        //   openLogin={openLogin}
-        //   openSignup={openSignup}
         />
       )}
+
       {feedback && (
         <FeedbackModal
           title={feedback.title}
@@ -88,3 +119,4 @@ function FeaturedArtisans({ currentUser, openLogin, openSignup }) {
 }
 
 export default FeaturedArtisans;
+

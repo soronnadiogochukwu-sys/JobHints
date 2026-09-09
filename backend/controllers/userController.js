@@ -79,7 +79,6 @@ const updateProfile = async (req, res) => {
 
     console.log("====================================");
 
-
     // ==========================================
     // FIND USER
     // ==========================================
@@ -307,9 +306,36 @@ const updateProfile = async (req, res) => {
     });
   }
 };
+// ==========================================
+    // GET FEATURED ARTISANS
+    // ==========================================
+   const getFeaturedArtisans = async (req, res) => {
+  try {
+    const artisans = await User.find({
+      role: "artisan",
+      isFeatured: true,
+    })
+      .select(
+        "name profileImage trade experience skills services availability portfolio location bio isFeatured"
+      )
+      .limit(4);
 
+    res.status(200).json({
+      artisans,
+    });
+
+  } catch (error) {
+    console.error("GET FEATURED ARTISANS ERROR:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch featured artisans",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   getProfile,
   updateProfile,
+  getFeaturedArtisans,
 };
