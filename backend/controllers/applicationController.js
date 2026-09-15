@@ -136,14 +136,19 @@ const applyForJob = async (req, res) => {
 // ==========================================
 const getMyApplications = async (req, res) => {
   try {
-    const applications = await Application.find({
-      applicant: req.user.id
-    })
-      .populate(
-        "job",
-        "title company location category salary type status"
-      )
-      .sort({ createdAt: -1 });
+    const applications =
+      await Application.find({
+        applicant: req.user.id
+      })
+        .populate(
+          "job",
+          "title company location category salary type status"
+        )
+        .populate(
+          "employer",
+          "name companyName email phone location profileImage"
+        )
+        .sort({ createdAt: -1 });
 
     res.status(200).json({
       count: applications.length,
@@ -151,7 +156,10 @@ const getMyApplications = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("GET MY APPLICATIONS ERROR:", error);
+    console.error(
+      "GET MY APPLICATIONS ERROR:",
+      error
+    );
 
     res.status(500).json({
       message: "Failed to fetch applications",
@@ -164,16 +172,22 @@ const getMyApplications = async (req, res) => {
 // ==========================================
 const getEmployerApplications = async (req, res) => {
   try {
-    // Find all jobs created by this employer
     const jobs = await Job.find({
       employer: req.user.id
     }).select("_id");
 
     const jobIds = jobs.map((job) => job._id);
 
-    // Find applications submitted for those jobs
     const applications = await Application.find({
-      job: { $in: jobIds }
+      $or: [
+        {
+          job: { $in: jobIds }
+        },
+        {
+          employer: req.user.id,
+          applicationType: "direct-hire"
+        }
+      ]
     })
       .populate(
         "job",
@@ -181,7 +195,11 @@ const getEmployerApplications = async (req, res) => {
       )
       .populate(
         "applicant",
-        "name email phone location profileImage bio skills resumeUrl"
+        "name email phone location profileImage bio skills resumeUrl trade experience services availability portfolio"
+      )
+      .populate(
+        "employer",
+        "name companyName email phone location profileImage"
       )
       .sort({ createdAt: -1 });
 
@@ -191,6 +209,11 @@ const getEmployerApplications = async (req, res) => {
     });
 
   } catch (error) {
+    console.error(
+      "GET EMPLOYER APPLICATIONS ERROR:",
+      error
+    );
+
     res.status(500).json({
       message: "Failed to fetch employer applications",
       error: error.message
@@ -219,7 +242,8 @@ const updateApplicationStatus = async (req, res) => {
       });
     }
 
-    const application = await Application.findById(req.params.id);
+    const application =
+      await Application.findById(req.params.id);
 
     if (!application) {
       return res.status(404).json({
@@ -227,7 +251,43 @@ const updateApplicationStatus = async (req, res) => {
       });
     }
 
-    const job = await Job.findById(application.job);
+    // ==========================================
+    // DIRECT HIRE
+    // ==========================================
+
+    if (
+      application.applicationType ===
+      "direct-hire"
+    ) {
+      if (
+        !application.employer ||
+        application.employer.toString() !==
+          req.user.id
+      ) {
+        return res.status(403).json({
+          message:
+            "You are not authorized to update this application"
+        });
+      }
+
+      application.status = status;
+
+      await application.save();
+
+      return res.status(200).json({
+        message:
+          "Application status updated successfully",
+        application
+      });
+    }
+
+    // ==========================================
+    // NORMAL JOB APPLICATION
+    // ==========================================
+
+    const job = await Job.findById(
+      application.job
+    );
 
     if (!job) {
       return res.status(404).json({
@@ -235,10 +295,13 @@ const updateApplicationStatus = async (req, res) => {
       });
     }
 
-    // Make sure this employer owns the job
-    if (job.employer.toString() !== req.user.id) {
+    if (
+      job.employer.toString() !==
+      req.user.id
+    ) {
       return res.status(403).json({
-        message: "You are not authorized to update this application"
+        message:
+          "You are not authorized to update this application"
       });
     }
 
@@ -247,13 +310,20 @@ const updateApplicationStatus = async (req, res) => {
     await application.save();
 
     res.status(200).json({
-      message: "Application status updated successfully",
+      message:
+        "Application status updated successfully",
       application
     });
 
   } catch (error) {
+    console.error(
+      "UPDATE APPLICATION STATUS ERROR:",
+      error
+    );
+
     res.status(500).json({
-      message: "Failed to update application status",
+      message:
+        "Failed to update application status",
       error: error.message
     });
   }
@@ -375,6 +445,113 @@ const getArtisanDashboardStats = async (req, res) => {
     });
   }
 };
+// ==========================================
+// DIRECT HIRE ARTISAN
+// ==========================================
+
+const createDirectHire = async (req, res) => {
+  try {
+    const { artisanId } = req.params;
+    const { status, message } = req.body;
+
+    const employer = await User.findById(req.user.id);
+
+    if (!employer) {
+      return res.status(404).json({
+        message: "Employer not found"
+      });
+    }
+
+    if (employer.role !== "employer") {
+      return res.status(403).json({
+        message: "Only employers can hire artisans"
+      });
+    }
+
+    const artisan = await User.findById(artisanId);
+
+    if (!artisan) {
+      return res.status(404).json({
+        message: "Artisan not found"
+      });
+    }
+
+    if (artisan.role !== "artisan") {
+      return res.status(400).json({
+        message: "Selected user is not an artisan"
+      });
+    }
+
+    const existingApplication =
+      await Application.findOne({
+        applicant: artisanId,
+        employer: req.user.id,
+        applicationType: "direct-hire",
+        status: {
+          $nin: ["rejected"]
+        }
+      });
+
+    if (existingApplication) {
+      return res.status(400).json({
+        message:
+          "You already have an active hiring request for this artisan"
+      });
+    }
+
+    const allowedStatuses = [
+      "pending",
+      "shortlisted",
+      "hired"
+    ];
+
+    const selectedStatus =
+      status && allowedStatuses.includes(status)
+        ? status
+        : "pending";
+
+    const application =
+      await Application.create({
+        job: null,
+        applicant: artisanId,
+        employer: req.user.id,
+        applicationType: "direct-hire",
+        coverLetter: message || "",
+        resumeUrl: artisan.resumeUrl || "",
+        status: selectedStatus
+      });
+
+    const populatedApplication =
+      await Application.findById(application._id)
+        .populate(
+          "applicant",
+          "name email phone location profileImage bio skills trade experience services availability portfolio"
+        )
+        .populate(
+          "employer",
+          "name companyName email phone location profileImage"
+        );
+
+    res.status(201).json({
+      message:
+        selectedStatus === "hired"
+          ? "Artisan hired successfully"
+          : "Hiring request sent successfully",
+      application: populatedApplication
+    });
+
+  } catch (error) {
+    console.error(
+      "CREATE DIRECT HIRE ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      message: "Failed to create hiring request",
+      error: error.message
+    });
+  }
+};
 
 module.exports = {
   applyForJob,
@@ -382,5 +559,6 @@ module.exports = {
   getEmployerApplications,
   updateApplicationStatus,
   getEmployerDashboardStats,
-  getArtisanDashboardStats
+  getArtisanDashboardStats,
+  createDirectHire
 };

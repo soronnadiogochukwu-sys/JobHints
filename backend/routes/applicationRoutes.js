@@ -6,7 +6,8 @@ const {
   getEmployerApplications,
   updateApplicationStatus,
   getEmployerDashboardStats,
-  getArtisanDashboardStats
+  getArtisanDashboardStats,
+  createDirectHire
 } = require("../controllers/applicationController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -14,9 +15,8 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-
 // ==========================================
-// GRADUATE + ARTISAN APPLY FOR JOB
+// NORMAL JOB APPLICATION
 // ==========================================
 
 router.post(
@@ -26,9 +26,19 @@ router.post(
   applyForJob
 );
 
+// ==========================================
+// DIRECT HIRE NOW
+// ==========================================
+
+router.post(
+  "/direct-hire/:artisanId",
+  authMiddleware,
+  roleMiddleware("employer"),
+  createDirectHire
+);
 
 // ==========================================
-// GRADUATE + ARTISAN VIEW THEIR APPLICATIONS
+// MY APPLICATIONS
 // ==========================================
 
 router.get(
@@ -38,9 +48,8 @@ router.get(
   getMyApplications
 );
 
-
 // ==========================================
-// EMPLOYER VIEW APPLICATIONS
+// EMPLOYER APPLICATIONS
 // ==========================================
 
 router.get(
@@ -49,7 +58,6 @@ router.get(
   roleMiddleware("employer"),
   getEmployerApplications
 );
-
 
 // ==========================================
 // EMPLOYER DASHBOARD STATS
@@ -62,9 +70,8 @@ router.get(
   getEmployerDashboardStats
 );
 
-
 // ==========================================
-// EMPLOYER UPDATE APPLICATION STATUS
+// UPDATE APPLICATION STATUS
 // ==========================================
 
 router.put(
@@ -73,7 +80,6 @@ router.put(
   roleMiddleware("employer"),
   updateApplicationStatus
 );
-
 
 // ==========================================
 // ARTISAN DASHBOARD STATS
@@ -85,6 +91,5 @@ router.get(
   roleMiddleware("artisan"),
   getArtisanDashboardStats
 );
-
 
 module.exports = router;

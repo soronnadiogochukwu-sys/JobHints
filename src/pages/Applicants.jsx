@@ -439,13 +439,11 @@ function Applicants() {
 
                         {/* JOB */}
                         <td>
-
-                          {
-                            job?.title ||
-                            "Unknown Job"
-                          }
-
-                        </td>
+                        {application.applicationType ===
+                        "direct-hire"
+                          ? "Direct Hire"
+                          : job?.title || "Unknown Job"}
+                      </td>
 
                         {/* LOCATION */}
                         <td>

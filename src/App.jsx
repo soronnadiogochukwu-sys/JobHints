@@ -151,27 +151,36 @@ function App() {
   // ==========================================
 
   const handleLogin = (user) => {
-    console.log("Logged in user:", user);
+  console.log("Logged in user:", user);
 
-    setCurrentUser(user);
+  setCurrentUser(user);
 
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify(user)
+  localStorage.setItem(
+    "currentUser",
+    JSON.stringify(user)
+  );
+
+  setShowLogin(false);
+
+  // ========================================
+  // RETURN TO ARTISAN AFTER HIRE LOGIN
+  // ========================================
+
+  const pendingHire =
+    sessionStorage.getItem(
+      "pendingHireArtisan"
     );
 
-    setShowLogin(false);
+  if (pendingHire) {
+    return;
+  }
 
-    // ========================================
-    // ALL USERS ENTER THROUGH /dashboard
-    //
-    // The role determines which dashboard
-    // layout is displayed.
-    // ========================================
+  // ========================================
+  // NORMAL LOGIN
+  // ========================================
 
-    navigate("/dashboard");
-  };
-
+  navigate("/dashboard");
+};
   // ==========================================
   // SIGNUP SUCCESS
   // ==========================================
@@ -236,30 +245,31 @@ function App() {
             HOME
         ====================================== */}
 
-        <Route
-          path="/"
-          element={
-            currentUser ? (
-              <Navigate
-                to="/dashboard"
-                replace
-              />
-            ) : (
-              <Home
-                onOpen={(job) =>
-                  setSelectedJob(job)
-                }
-                currentUser={currentUser}
-                openLogin={() =>
-                  setShowLogin(true)
-                }
-                openSignup={() =>
-                  setShowSignup(true)
-                }
-              />
-            )
-          }
-        />
+          <Route
+            path="/"
+            element={
+              currentUser &&
+              !sessionStorage.getItem("pendingHireArtisan") ? (
+                <Navigate
+                  to="/dashboard"
+                  replace
+                />
+              ) : (
+                <Home
+                  onOpen={(job) =>
+                    setSelectedJob(job)
+                  }
+                  currentUser={currentUser}
+                  openLogin={() =>
+                    setShowLogin(true)
+                  }
+                  openSignup={() =>
+                    setShowSignup(true)
+                  }
+                />
+              )
+            }
+          />
 
         {/* ======================================
             MAIN DASHBOARD

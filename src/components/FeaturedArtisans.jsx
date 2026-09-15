@@ -7,10 +7,20 @@ import ArtisansModal from "../components/ArtisansModal";
 import FeedbackModal from "../components/FeedbackModal";
 import "./FeaturedArtisans.css";
 
-function FeaturedArtisans({ currentUser, openLogin, openSignup }) {
-  const [selectedArtisan, setSelectedArtisan] = useState(null);
-  const [feedback, setFeedback] = useState(null);
-  const [artisans, setArtisans] = useState([]);
+function FeaturedArtisans({
+  currentUser,
+  openLogin,
+  openSignup,
+}) {
+  const [selectedArtisan, setSelectedArtisan] =
+    useState(null);
+
+  const [feedback, setFeedback] =
+    useState(null);
+
+  const [artisans, setArtisans] =
+    useState([]);
+
   const navigate = useNavigate();
 
   // ==========================================
@@ -19,10 +29,13 @@ function FeaturedArtisans({ currentUser, openLogin, openSignup }) {
   useEffect(() => {
     const fetchFeaturedArtisans = async () => {
       try {
-        const response = await API.get("/users/featured-artisans");
+        const response = await API.get(
+          "/users/featured-artisans"
+        );
 
-        setArtisans(response.data.artisans || []);
-
+        setArtisans(
+          response.data.artisans || []
+        );
       } catch (error) {
         console.error(
           "FETCH FEATURED ARTISANS ERROR:",
@@ -36,32 +49,112 @@ function FeaturedArtisans({ currentUser, openLogin, openSignup }) {
     fetchFeaturedArtisans();
   }, []);
 
-  const handleHireNow = (artisan) => {
-    if (!currentUser) {
-      setFeedback({
-        variant: "info",
-        title: "Sign in required",
-        message: "Please sign in as an employer to hire artisans.",
-        primaryLabel: "Sign in",
-        primaryAction: () => openLogin && openLogin(),
-        secondaryLabel: "Create account",
-        secondaryAction: () => openSignup && openSignup(),
-      });
+  // ==========================================
+  // RESTORE ARTISAN AFTER EMPLOYER LOGIN
+  // ==========================================
+  useEffect(() => {
+    if (
+      currentUser?.role !== "employer"
+    ) {
       return;
     }
 
+    const pendingHire =
+      sessionStorage.getItem(
+        "pendingHireArtisan"
+      );
+
+    if (!pendingHire) {
+      return;
+    }
+
+    try {
+      const artisan =
+        JSON.parse(pendingHire);
+
+      if (artisan) {
+        setSelectedArtisan(artisan);
+      }
+
+      sessionStorage.removeItem(
+        "pendingHireArtisan"
+      );
+
+    } catch (error) {
+      console.error(
+        "FAILED TO RESTORE ARTISAN:",
+        error
+      );
+
+      sessionStorage.removeItem(
+        "pendingHireArtisan"
+      );
+    }
+  }, [currentUser]);
+
+  // ==========================================
+  // HIRE NOW
+  // ==========================================
+  const handleHireNow = (artisan) => {
+    // ------------------------------------------
+    // USER IS NOT LOGGED IN
+    // ------------------------------------------
+    if (!currentUser) {
+      sessionStorage.setItem(
+        "pendingHireArtisan",
+        JSON.stringify(artisan)
+      );
+
+      setFeedback({
+        variant: "info",
+        title: "Sign in required",
+        message:
+          "Please sign in as an employer to hire artisans.",
+        primaryLabel: "Sign in",
+        primaryAction: () => {
+          setFeedback(null);
+
+          if (openLogin) {
+            openLogin();
+          }
+        },
+        secondaryLabel: "Create account",
+        secondaryAction: () => {
+          setFeedback(null);
+
+          if (openSignup) {
+            openSignup();
+          }
+        },
+      });
+
+      return;
+    }
+
+    // ------------------------------------------
+    // USER IS LOGGED IN BUT NOT AN EMPLOYER
+    // ------------------------------------------
     if (currentUser.role !== "employer") {
       setFeedback({
         variant: "error",
         title: "Access denied",
-        message: "Only users registered as employers can hire artisans.",
+        message:
+          "Only users registered as employers can hire artisans.",
       });
+
       return;
     }
 
+    // ------------------------------------------
+    // EMPLOYER
+    // OPEN ARTISAN PROFILE MODAL
+    // ------------------------------------------
     setSelectedArtisan(artisan);
   };
 
+  // ==========================================
+  // CLOSE ARTISAN MODAL
+  // ==========================================
   const closeModal = () => {
     setSelectedArtisan(null);
   };
@@ -71,14 +164,18 @@ function FeaturedArtisans({ currentUser, openLogin, openSignup }) {
       <div className="featured-header">
         <div>
           <h2>Featured Artisans</h2>
+
           <p>
-            Discover skilled artisans ready to work on your next project.
+            Discover skilled artisans ready to work
+            on your next project.
           </p>
         </div>
 
         <button
           className="view-all-btn"
-          onClick={() => navigate("/artisans")}
+          onClick={() =>
+            navigate("/artisans")
+          }
         >
           View All
           <FaArrowRight />
@@ -86,15 +183,20 @@ function FeaturedArtisans({ currentUser, openLogin, openSignup }) {
       </div>
 
       <div className="artisans-grid">
-        {artisans.slice(0, 4).map((artisan) => (
-          <ArtisansCard
-            key={artisan._id}
-            artisan={artisan}
-            onHire={handleHireNow}
-          />
-        ))}
+        {artisans
+          .slice(0, 4)
+          .map((artisan) => (
+            <ArtisansCard
+              key={artisan._id}
+              artisan={artisan}
+              onHire={handleHireNow}
+            />
+          ))}
       </div>
 
+      {/* ======================================
+          ARTISAN PROFILE MODAL
+      ====================================== */}
       {selectedArtisan && (
         <ArtisansModal
           artisan={selectedArtisan}
@@ -102,16 +204,29 @@ function FeaturedArtisans({ currentUser, openLogin, openSignup }) {
         />
       )}
 
+      {/* ======================================
+          FEEDBACK MODAL
+      ====================================== */}
       {feedback && (
         <FeedbackModal
           title={feedback.title}
           message={feedback.message}
           variant={feedback.variant}
-          primaryLabel={feedback.primaryLabel}
-          secondaryLabel={feedback.secondaryLabel}
-          primaryAction={feedback.primaryAction}
-          secondaryAction={feedback.secondaryAction}
-          onClose={() => setFeedback(null)}
+          primaryLabel={
+            feedback.primaryLabel
+          }
+          secondaryLabel={
+            feedback.secondaryLabel
+          }
+          primaryAction={
+            feedback.primaryAction
+          }
+          secondaryAction={
+            feedback.secondaryAction
+          }
+          onClose={() =>
+            setFeedback(null)
+          }
         />
       )}
     </section>

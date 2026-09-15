@@ -384,15 +384,21 @@ function ArtisanDashboard({ currentUser }) {
                   <div>
 
                     <h3>
-                      {application.job?.title ||
-                        "Job"}
-                    </h3>
+                    {application.applicationType ===
+                    "direct-hire"
+                      ? "Direct Hire Opportunity"
+                      : application.job?.title || "Job"}
+                  </h3>
 
-                    <p>
-                      {application.job?.company ||
+                  <p>
+                    {application.applicationType ===
+                    "direct-hire"
+                      ? application.employer?.companyName ||
+                        application.employer?.name ||
+                        "Employer"
+                      : application.job?.company ||
                         "Company"}
-                    </p>
-
+                  </p>
                     <small>
                       {application.job?.location ||
                         ""}
