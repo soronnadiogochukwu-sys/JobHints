@@ -10,7 +10,7 @@ const jobRoutes = require("./routes/jobRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 const statsRoutes = require("./routes/statsRoutes");
 const profileRoutes = require("./routes/profileRoutes");
-const testimonialRoutes = require("./routes/testimonialRoutes");
+const testimonialRoutes = require("./routes/TestimonialRoutes");
 
 
 const app = express();
