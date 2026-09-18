@@ -666,9 +666,11 @@ function Applicants() {
 
                 <span>
                   {
-                    selectedApplicant
-                      .job?.title ||
-                    "N/A"
+                    selectedApplicant.applicationType ===
+                    "direct-hire"
+                      ? "Direct Hire"
+                      : selectedApplicant.job?.title ||
+                        "N/A"
                   }
                 </span>
 
@@ -682,9 +684,13 @@ function Applicants() {
 
                 <span>
                   {
-                    selectedApplicant
-                      .job?.company ||
-                    "N/A"
+                    selectedApplicant.applicationType ===
+                    "direct-hire"
+                      ? selectedApplicant.employer?.companyName ||
+                        selectedApplicant.employer?.name ||
+                        "N/A"
+                      : selectedApplicant.job?.company ||
+                        "N/A"
                   }
                 </span>
 

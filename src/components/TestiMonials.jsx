@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import {
   FaQuoteLeft,
   FaStar,
@@ -6,14 +7,40 @@ import {
   FaXmark,
 } from "react-icons/fa6";
 
-import TestiMonialsData from "../data/TestiMonialsData";
+import API from "../services/api";
 import "./TestiMonials.css";
 
 function TestiMonials() {
+  const [testimonials, setTestimonials] = useState([]);
   const [showAll, setShowAll] = useState(false);
 
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const response = await API.get("/testimonials");
+
+        const formattedTestimonials = response.data.testimonials.map(
+          (testimonial) => ({
+            id: testimonial._id,
+            comment: testimonial.feedback,
+            name: testimonial.user?.name || "JobHints User",
+            role: testimonial.user?.role || "User",
+            image: testimonial.user?.profileImage || "",
+            rating: testimonial.rating,
+          })
+        );
+
+        setTestimonials(formattedTestimonials);
+      } catch (error) {
+        console.error("Failed to fetch testimonials:", error);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
   // The first 3 are displayed on the landing page
-  const displayedTestimonials = TestiMonialsData.slice(0, 3);
+  const displayedTestimonials = testimonials.slice(0, 3);
 
   return (
     <section className="testimonials-section">
@@ -87,7 +114,7 @@ function TestiMonials() {
             {/* ALL TESTIMONIALS */}
             <div className="all-testimonials-grid">
 
-              {TestiMonialsData.map((testimonial) => (
+              {testimonials.map((testimonial) => (
                 <TestimonialCard
                   key={testimonial.id}
                   testimonial={testimonial}
@@ -182,3 +209,4 @@ function TestimonialCard({ testimonial }) {
 }
 
 export default TestiMonials;
+
