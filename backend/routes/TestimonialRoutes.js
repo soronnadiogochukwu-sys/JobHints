@@ -3,7 +3,7 @@ const express = require("express");
 const {
   createTestimonial,
   getDisplayedTestimonials,
-} = require("../controllers/testimonialController");
+} = require("../controllers/TestimonialController");
 
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
